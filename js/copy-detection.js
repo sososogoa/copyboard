@@ -5,6 +5,11 @@ class CopyDetection {
         this.keyboardListener = null;
         this.isEnabled = true;
         this.onCopyCallback = null;
+        this.debounceTimer = null;
+        this.lastCopiedText = '';
+        this.lastCopyTime = 0;
+        this.copyDebounceDelay = 300; // 300ms 디바운스
+        this.duplicateThreshold = 1000; // 1초 내 같은 텍스트 무시
         
         this.loadSettings();
     }
@@ -34,6 +39,47 @@ class CopyDetection {
         return this.isEnabled;
     }
 
+    // 디바운스된 복사 처리
+    handleCopyDebounced(text) {
+        // 디바운스 타이머 클리어
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+
+        // 중복 복사 체크
+        const now = Date.now();
+        if (text === this.lastCopiedText && (now - this.lastCopyTime) < this.duplicateThreshold) {
+            console.log('CopyBoard: 중복 복사 무시:', text.substring(0, 30));
+            return;
+        }
+
+        // 디바운스 적용
+        this.debounceTimer = setTimeout(() => {
+            this.processCopy(text);
+        }, this.copyDebounceDelay);
+    }
+
+    // 실제 복사 처리
+    processCopy(text) {
+        if (!text || !text.trim()) return;
+
+        const trimmedText = text.trim();
+        
+        // 최소 길이 체크
+        if (trimmedText.length < 3) {
+            return;
+        }
+
+        // 마지막 복사 정보 업데이트
+        this.lastCopiedText = trimmedText;
+        this.lastCopyTime = Date.now();
+
+        // 콜백 실행
+        if (this.onCopyCallback) {
+            this.onCopyCallback(trimmedText);
+        }
+    }
+
     // 복사 감지 시작
     start() {
         if (this.copyListener && this.keyboardListener) return; // 이미 설정되어 있으면 스킵
@@ -44,9 +90,9 @@ class CopyDetection {
             setTimeout(async () => {
                 let copiedText = await this.getCopiedText();
                 
-                // 복사된 텍스트가 있으면 콜백 실행
-                if (copiedText && copiedText.trim() && this.onCopyCallback) {
-                    this.onCopyCallback(copiedText.trim());
+                // 복사된 텍스트가 있으면 디바운스된 처리 실행
+                if (copiedText && copiedText.trim()) {
+                    this.handleCopyDebounced(copiedText.trim());
                 }
             }, 100);
         };
@@ -58,8 +104,8 @@ class CopyDetection {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
                 setTimeout(() => {
                     const selection = window.getSelection().toString();
-                    if (selection && selection.trim() && this.onCopyCallback) {
-                        this.onCopyCallback(selection.trim());
+                    if (selection && selection.trim()) {
+                        this.handleCopyDebounced(selection.trim());
                     }
                 }, 100);
             }
@@ -71,6 +117,12 @@ class CopyDetection {
 
     // 복사 감지 중지
     stop() {
+        // 디바운스 타이머 정리
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = null;
+        }
+
         if (this.copyListener) {
             document.removeEventListener('copy', this.copyListener);
             this.copyListener = null;

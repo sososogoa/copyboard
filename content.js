@@ -13,6 +13,11 @@ function init() {
     if (window.floatingUI && window.historyManager) {
         window.floatingUI.setHistoryManager(window.historyManager);
     }
+
+    // 다크 모드 시스템 초기화
+    if (window.CopyBoardDarkMode) {
+        window.CopyBoardDarkMode.init();
+    }
 }
 
 // 복사 처리 함수
@@ -38,7 +43,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // 컨텍스트 메뉴에서 저장할 때 알림 표시
         if (window.toastSystem) {
             window.toastSystem.showAutoSave();
-            sendResponse({ success: true });
+        sendResponse({ success: true });
         }
     }
 });

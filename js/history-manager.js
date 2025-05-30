@@ -2,15 +2,41 @@
 class HistoryManager {
     constructor() {
         this.onHistoryUpdated = null;
+        this.searchIndex = null;
+        this.cacheTimeout = null;
+        this.cachedHistory = null;
+        this.cacheExpiry = 5000; // 5초 캐시
     }
 
-    // 히스토리 저장
+    // 히스토리 저장 (디바운싱 적용)
     save(text) {
+        // 입력 검증
+        if (!text || typeof text !== 'string' || text.trim().length < 3) {
+            return;
+        }
+
         chrome.runtime.sendMessage({
             action: 'addToHistory',
             text: text,
+        }, (response) => {
+            if (response && response.success) {
+                this.invalidateCache();
+                this.updateUI();
+            }
         });
-        
+    }
+
+    // 캐시 무효화
+    invalidateCache() {
+        this.cachedHistory = null;
+        if (this.cacheTimeout) {
+            clearTimeout(this.cacheTimeout);
+            this.cacheTimeout = null;
+        }
+    }
+
+    // UI 업데이트 (디바운싱)
+    updateUI() {
         // 플로팅 박스가 닫혀있으면 자동으로 열기
         if (window.floatingUI && !window.floatingUI.isFloatingOpen()) {
             setTimeout(() => {
@@ -21,16 +47,34 @@ class HistoryManager {
             }, 100);
         }
 
-        // 자동 저장 토스트 표시
+        // 자동 저장 토스트 표시 (성능 최적화)
         if (window.toastSystem) {
-            window.toastSystem.showAutoSave();
+            requestAnimationFrame(() => {
+                window.toastSystem.showAutoSave();
+            });
         }
     }
 
-    // 히스토리 가져오기
+    // 히스토리 가져오기 (캐싱 적용)
     getHistory(callback) {
+        // 캐시된 데이터가 있으면 사용
+        if (this.cachedHistory) {
+            if (callback) {
+                callback(this.cachedHistory);
+            }
+            return;
+        }
+
         chrome.runtime.sendMessage({ action: 'getHistory' }, (response) => {
             if (response && response.history) {
+                // 캐시 저장
+                this.cachedHistory = response.history;
+                
+                // 캐시 만료 타이머 설정
+                this.cacheTimeout = setTimeout(() => {
+                    this.invalidateCache();
+                }, this.cacheExpiry);
+
                 if (callback) {
                     callback(response.history);
                 }
@@ -38,12 +82,68 @@ class HistoryManager {
         });
     }
 
+    // 검색 기능
+    search(query, callback) {
+        if (!query || query.length < 2) {
+            this.getHistory(callback);
+            return;
+        }
+
+        this.getHistory((history) => {
+            const searchTerms = query.toLowerCase().split(/\s+/);
+            
+            const results = history.filter(item => {
+                const text = item.text.toLowerCase();
+                return searchTerms.every(term => text.includes(term));
+            });
+
+            // 관련성 점수로 정렬
+            results.sort((a, b) => {
+                const aScore = this.calculateRelevanceScore(a.text, searchTerms);
+                const bScore = this.calculateRelevanceScore(b.text, searchTerms);
+                return bScore - aScore;
+            });
+
+            if (callback) {
+                callback(results);
+            }
+        });
+    }
+
+    // 관련성 점수 계산
+    calculateRelevanceScore(text, searchTerms) {
+        let score = 0;
+        const lowerText = text.toLowerCase();
+        
+        searchTerms.forEach(term => {
+            // 정확한 일치
+            const exactMatches = (lowerText.match(new RegExp(term, 'g')) || []).length;
+            score += exactMatches * 10;
+            
+            // 단어 시작 일치
+            const wordStartMatches = (lowerText.match(new RegExp(`\\b${term}`, 'g')) || []).length;
+            score += wordStartMatches * 5;
+        });
+        
+        return score;
+    }
+
     // 히스토리 아이템 삭제
     deleteItem(itemId, callback) {
         chrome.runtime.sendMessage({
             action: 'deleteHistoryItem',
             itemId: itemId,
-        }, () => {
+        }, (response) => {
+            if (response && response.success) {
+                // 캐시 무효화
+                this.invalidateCache();
+                
+                // UI 즉시 업데이트
+                if (window.floatingUI) {
+                    window.floatingUI.loadHistory();
+                }
+            }
+            
             if (callback) {
                 callback();
             }
@@ -54,6 +154,9 @@ class HistoryManager {
     clear() {
         chrome.runtime.sendMessage({ action: 'clearHistory' }, (response) => {
             if (response && response.success) {
+                // 캐시 무효화
+                this.invalidateCache();
+                
                 // 히스토리 업데이트
                 if (window.floatingUI) {
                     window.floatingUI.loadHistory();
@@ -69,6 +172,9 @@ class HistoryManager {
     restore() {
         chrome.runtime.sendMessage({ action: 'restoreHistory' }, (response) => {
             if (response && response.success) {
+                // 캐시 무효화
+                this.invalidateCache();
+                
                 // 히스토리 업데이트
                 if (window.floatingUI) {
                     window.floatingUI.loadHistory();

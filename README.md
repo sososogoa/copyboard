@@ -11,19 +11,21 @@
 - **취소/복원**: 실수로 삭제한 히스토리 복원 기능
 - **반응형 UI**: 다크 모드 지원 및 모던한 디자인
 
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```
 copyboard/
 ├── manifest.json          # 확장 프로그램 설정
 ├── background.js          # 백그라운드 서비스 워커
-├── content.js             # 메인 컨트롤러 (간소화됨)
-├── style.css              # 팝업 스타일
+├── content.js             # 메인 컨트롤러
+├── css                    # CSS 파일들
+│   ├── content-styles.css # 전체 CSS
 ├── js/                    # 모듈화된 JavaScript 파일들
 │   ├── copy-detection.js  # 복사 감지 시스템
-│   ├── toast-system.js    # 토스트 알림 시스템
-│   ├── history-manager.js # 히스토리 관리
+│   ├── dark-mode.js       # 복사 감지 시스템
 │   ├── floating-ui.js     # 플로팅 박스 UI
+│   ├── history-manager.js # 히스토리 관리
+│   ├── toast-system.js    # 토스트 알림 시스템
 └── icons/                 # 확장 프로그램 아이콘들
     ├── icon16.png
     ├── icon32.png

@@ -4,9 +4,13 @@
     "version": "1.0.0",
     "description": "페이지에서 복사한 텍스트를 자동으로 저장하고 관리하는 클립보드 도구",
 
-    "permissions": ["storage", "activeTab", "clipboardWrite", "clipboardRead", "contextMenus", "tabs"],
+    "permissions": ["storage", "activeTab", "clipboardWrite", "clipboardRead", "contextMenus", "notifications"],
 
     "host_permissions": ["<all_urls>"],
+
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"
+    },
 
     "content_scripts": [
         {
@@ -15,9 +19,11 @@
                 "js/copy-detection.js",
                 "js/toast-system.js", 
                 "js/history-manager.js",
+                "js/dark-mode.js",
                 "js/floating-ui.js",
                 "content.js"
             ],
+            "css": ["css/content-styles.css"],
             "run_at": "document_start"
         }
     ],

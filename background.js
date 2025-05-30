@@ -1,6 +1,141 @@
 let copyHistory = [];
 let historyBackup = null; // 백업 저장용
 const MAX_HISTORY_SIZE = 10;
+const MAX_TEXT_LENGTH = 10000; // 최대 텍스트 길이
+const COMPRESSION_THRESHOLD = 1000; // 압축 임계값
+
+// 텍스트 압축 유틸리티
+const compressText = (text) => {
+    if (text.length < COMPRESSION_THRESHOLD) {
+        return { compressed: false, data: text };
+    }
+    
+    try {
+        // 간단한 LZ 압축 알고리즘 구현
+        const compressed = lzCompress(text);
+        return { 
+            compressed: true, 
+            data: compressed,
+            originalLength: text.length
+        };
+    } catch (error) {
+        console.warn('CopyBoard: 압축 실패, 원본 저장:', error);
+        return { compressed: false, data: text };
+    }
+};
+
+// 텍스트 압축 해제
+const decompressText = (item) => {
+    if (!item.compressed) {
+        return item.data;
+    }
+    
+    try {
+        return lzDecompress(item.data);
+    } catch (error) {
+        console.error('CopyBoard: 압축 해제 실패:', error);
+        return item.data; // 원본 반환
+    }
+};
+
+// 간단한 LZ 압축 구현
+const lzCompress = (text) => {
+    const dict = {};
+    let dictSize = 256;
+    let result = [];
+    let w = "";
+
+    for (let i = 0; i < text.length; i++) {
+        const c = text.charAt(i);
+        const wc = w + c;
+        
+        if (dict[wc]) {
+            w = wc;
+        } else {
+            result.push(dict[w] || w.charCodeAt(0));
+            dict[wc] = dictSize++;
+            w = c;
+        }
+    }
+    
+    if (w) {
+        result.push(dict[w] || w.charCodeAt(0));
+    }
+    
+    return JSON.stringify(result);
+};
+
+// 간단한 LZ 압축 해제 구현
+const lzDecompress = (compressed) => {
+    const data = JSON.parse(compressed);
+    const dict = {};
+    let dictSize = 256;
+    let result = "";
+    let w = String.fromCharCode(data[0]);
+    result = w;
+
+    for (let i = 1; i < data.length; i++) {
+        const k = data[i];
+        let entry;
+        
+        if (dict[k]) {
+            entry = dict[k];
+        } else if (k === dictSize) {
+            entry = w + w.charAt(0);
+        } else {
+            throw new Error('압축 해제 오류');
+        }
+        
+        result += entry;
+        dict[dictSize++] = w + entry.charAt(0);
+        w = entry;
+    }
+    
+    return result;
+};
+
+// 텍스트 유효성 검사 및 정리
+const validateAndCleanText = (text) => {
+    if (!text || typeof text !== 'string') {
+        return null;
+    }
+
+    // 길이 제한
+    if (text.length > MAX_TEXT_LENGTH) {
+        text = text.substring(0, MAX_TEXT_LENGTH) + '... (잘림)';
+    }
+
+    // 불필요한 공백 정리
+    text = text.replace(/\s+/g, ' ').trim();
+
+    // 최소 길이 확인
+    if (text.length < 3) {
+        return null;
+    }
+
+    return text;
+};
+
+// 히스토리 인덱싱 (검색 최적화)
+const buildSearchIndex = () => {
+    const index = new Map();
+    
+    copyHistory.forEach((item, idx) => {
+        const text = decompressText(item).toLowerCase();
+        const words = text.split(/\s+/);
+        
+        words.forEach(word => {
+            if (word.length > 2) { // 2글자 이하 단어 제외
+                if (!index.has(word)) {
+                    index.set(word, new Set());
+                }
+                index.get(word).add(idx);
+            }
+        });
+    });
+    
+    return index;
+};
 
 // 저장소에서 기록 로드
 const loadHistory = async () => {
@@ -39,22 +174,35 @@ const saveHistory = async () => {
 
 // 텍스트를 기록에 추가
 const addToHistory = (text) => {
-    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    // 텍스트 유효성 검사 및 정리
+    const cleanedText = validateAndCleanText(text);
+    if (!cleanedText) {
         return false;
     }
 
-    const trimmedText = text.trim();
+    // 중복 확인 (압축 해제된 텍스트로 비교)
+    const isDuplicate = copyHistory.some(item => {
+        const existingText = decompressText(item);
+        return existingText === cleanedText;
+    });
 
-    // 중복 확인 및 제거
-    copyHistory = copyHistory.filter((item) => item.text !== trimmedText);
+    if (isDuplicate) {
+        console.log('CopyBoard: 중복 텍스트 무시:', cleanedText.substring(0, 50));
+        return false;
+    }
+
+    // 텍스트 압축
+    const compressedData = compressText(cleanedText);
 
     // 새 항목을 맨 앞에 추가
     const newItem = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
-        text: trimmedText,
+        text: cleanedText, // 표시용 원본 텍스트
+        ...compressedData, // 압축된 데이터
         timestamp: Date.now(),
         dateString: new Date().toLocaleString('ko-KR'),
         url: '', // content script에서 제공되지 않으면 빈 문자열
+        size: cleanedText.length, // 원본 크기 저장
     };
 
     copyHistory.unshift(newItem);
@@ -65,6 +213,13 @@ const addToHistory = (text) => {
     }
 
     saveHistory();
+    
+    // 압축 통계 로깅
+    if (compressedData.compressed) {
+        const compressionRatio = (compressedData.data.length / cleanedText.length * 100).toFixed(1);
+        console.log(`CopyBoard: 텍스트 압축됨 (${compressionRatio}% 크기)`);
+    }
+
     return true;
 };
 

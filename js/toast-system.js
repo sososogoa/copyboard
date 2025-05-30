@@ -4,26 +4,88 @@ class ToastSystem {
         this.activeToasts = [];
         this.stylesAdded = new Set();
         this.resizeObserver = null;
+        this.mutationObserver = null;
+        this.cleanupTimer = null;
+        this.maxToasts = 5; // 최대 토스트 수 제한
     }
 
     // 토스트 등록
     register(toast) {
+        // 최대 토스트 수 제한
+        if (this.activeToasts.length >= this.maxToasts) {
+            const oldestToast = this.activeToasts[0];
+            if (oldestToast && document.body.contains(oldestToast)) {
+                this.forceRemoveToast(oldestToast);
+            }
+        }
+
         this.activeToasts.push(toast);
         
         // 토스트가 제거될 때 배열에서도 제거
         const originalRemove = toast.remove;
         toast.remove = () => {
-            const index = this.activeToasts.indexOf(toast);
-            if (index > -1) {
-                this.activeToasts.splice(index, 1);
-            }
+            this.removeFromArray(toast);
             originalRemove.call(toast);
             
             // 남은 토스트들 위치 재조정
-            setTimeout(() => {
-                this.updateAllPositions();
-            }, 100);
+            this.debouncePositionUpdate();
         };
+
+        // 자동 정리 타이머 설정
+        this.scheduleCleanup();
+    }
+
+    // 배열에서 토스트 제거
+    removeFromArray(toast) {
+        const index = this.activeToasts.indexOf(toast);
+        if (index > -1) {
+            this.activeToasts.splice(index, 1);
+        }
+    }
+
+    // 강제 토스트 제거
+    forceRemoveToast(toast) {
+        if (toast && document.body.contains(toast)) {
+            toast.style.animation = 'slideOutRight 0.2s ease-out forwards';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    toast.remove();
+                }
+            }, 200);
+        }
+    }
+
+    // 디바운스된 위치 업데이트
+    debouncePositionUpdate() {
+        if (this.positionUpdateTimer) {
+            clearTimeout(this.positionUpdateTimer);
+        }
+        this.positionUpdateTimer = setTimeout(() => {
+            this.updateAllPositions();
+        }, 100);
+    }
+
+    // 자동 정리 스케줄링
+    scheduleCleanup() {
+        if (this.cleanupTimer) {
+            clearTimeout(this.cleanupTimer);
+        }
+        this.cleanupTimer = setTimeout(() => {
+            this.performMaintenance();
+        }, 30000); // 30초마다 정리
+    }
+
+    // 유지보수 작업
+    performMaintenance() {
+        // 제거된 토스트들을 배열에서 정리
+        this.activeToasts = this.activeToasts.filter(toast => 
+            toast && document.body.contains(toast)
+        );
+
+        // 다음 정리 스케줄링
+        if (this.activeToasts.length > 0) {
+            this.scheduleCleanup();
+        }
     }
 
     // 모든 토스트 위치 업데이트
@@ -303,22 +365,17 @@ class ToastSystem {
         const floatingBox = document.getElementById('copyboard-floating');
         if (!floatingBox || this.resizeObserver) return;
         
-        this.resizeObserver = new ResizeObserver(() => {
-            requestAnimationFrame(() => {
-                this.updateAllPositions();
-            });
-        });
+        // 디바운스된 핸들러
+        const debouncedHandler = this.debounce(() => {
+            this.updateAllPositions();
+        }, 100);
         
+        this.resizeObserver = new ResizeObserver(debouncedHandler);
         this.resizeObserver.observe(floatingBox);
         
-        // 내용 변화도 감지
-        const mutationObserver = new MutationObserver(() => {
-            requestAnimationFrame(() => {
-                this.updateAllPositions();
-            });
-        });
-        
-        mutationObserver.observe(floatingBox, {
+        // 내용 변화도 감지 (디바운스 적용)
+        this.mutationObserver = new MutationObserver(debouncedHandler);
+        this.mutationObserver.observe(floatingBox, {
             childList: true,
             subtree: true,
             attributes: true,
@@ -326,25 +383,61 @@ class ToastSystem {
         });
     }
 
+    // 디바운스 유틸리티
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
     // ResizeObserver 정리
     cleanup() {
+        // 타이머 정리
+        if (this.cleanupTimer) {
+            clearTimeout(this.cleanupTimer);
+            this.cleanupTimer = null;
+        }
+
+        if (this.positionUpdateTimer) {
+            clearTimeout(this.positionUpdateTimer);
+            this.positionUpdateTimer = null;
+        }
+
+        // Observer 정리
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
             this.resizeObserver = null;
         }
 
-        // 모든 활성 토스트 제거
-        this.activeToasts.forEach(toast => {
+        if (this.mutationObserver) {
+            this.mutationObserver.disconnect();
+            this.mutationObserver = null;
+        }
+
+        // 모든 활성 토스트 제거 (성능 개선된 버전)
+        const toasts = [...this.activeToasts]; // 복사본 생성
+        this.activeToasts = [];
+
+        toasts.forEach(toast => {
             if (toast && document.body.contains(toast)) {
-                toast.style.animation = 'slideOutRight 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards';
+                // 애니메이션 없이 즉시 제거 (성능 우선)
+                toast.style.display = 'none';
                 setTimeout(() => {
                     if (document.body.contains(toast)) {
                         toast.remove();
                     }
-                }, 300);
+                }, 0);
             }
         });
-        this.activeToasts = [];
+
+        // 스타일 정리
+        this.stylesAdded.clear();
     }
 }
 

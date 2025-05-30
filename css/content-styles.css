@@ -1,0 +1,781 @@
+/* CopyBoard 통합 스타일 */
+
+/* 테마 변수 */
+:root {
+    --light-bg: #ffffff;
+    --light-text: #1f2937;
+    --light-border: #e5e7eb;
+    --light-header-bg: #f9fafb;
+    --light-button-hover: #f3f4f6;
+    
+    --dark-bg: #1f2937;
+    --dark-text: #f9fafb;
+    --dark-border: #4b5563;
+    --dark-header-bg: #374151;
+    --dark-button-hover: #4b5563;
+    
+    --transition-duration: 0.25s;
+}
+
+/* 다크 모드 토글 버튼 */
+.dark-mode-toggle {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all var(--transition-duration) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 8px rgba(251, 191, 36, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+}
+
+.dark-mode-toggle.dark {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+    box-shadow: 0 4px 8px rgba(30, 41, 59, 0.4);
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(251, 191, 36, 0.4);
+}
+
+.dark-mode-toggle.dark:hover {
+    box-shadow: 0 6px 12px rgba(30, 41, 59, 0.5);
+}
+
+.dark-mode-toggle .icon {
+    display: inline-block;
+    transition: transform var(--transition-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+}
+
+.dark-mode-toggle:hover .icon {
+    animation: iconShake 0.3s ease-in-out;
+}
+
+.dark-mode-toggle.rotating .icon {
+    animation: iconRotate 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dark-mode-toggle:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
+}
+
+/* 플로팅 박스 기본 스타일 */
+#copyboard-floating {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 350px;
+    max-height: 500px;
+    background: var(--light-bg);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+    z-index: 999999;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+    animation: slideInFloating 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    /* 스크롤바 숨기기 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* 닫기 애니메이션 */
+#copyboard-floating.copyboard-closing {
+    animation: slideOutFloating 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+/* 부드러운 테마 전환 */
+#copyboard-floating,
+#copyboard-floating *:not(.dark-mode-toggle):not(.icon) {
+    transition: 
+        background-color var(--transition-duration) ease,
+        color var(--transition-duration) ease,
+        border-color var(--transition-duration) ease,
+        box-shadow var(--transition-duration) ease;
+}
+
+/* 스크롤바 숨기기 */
+#copyboard-floating ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+#copyboard-floating ::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* 다크 모드 스타일 */
+#copyboard-floating.copyboard-dark-mode {
+    background: var(--dark-bg) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-header {
+    background: var(--dark-header-bg) !important;
+    border-bottom-color: var(--dark-border) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-title {
+    color: var(--dark-text) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-content {
+    background: var(--dark-bg) !important;
+    color: var(--dark-text) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-textarea {
+    background: var(--dark-header-bg) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--dark-text) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-textarea:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item {
+    background: var(--dark-header-bg) !important;
+    border-color: var(--dark-border) !important;
+    color: var(--dark-text) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item:hover,
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item.hovered {
+    background: var(--dark-button-hover) !important;
+    border-color: #6366f1 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item-text {
+    color: var(--dark-text) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item-date,
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item-meta {
+    color: #9ca3af !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item-delete {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item-delete:hover,
+#copyboard-floating.copyboard-dark-mode .copyboard-history-item-delete.hovered {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #ffffff !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-stats {
+    color: #9ca3af !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-stats strong {
+    color: #818cf8 !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-empty {
+    color: #6b7280 !important;
+}
+
+/* 다크 모드 버튼 스타일 */
+#copyboard-floating.copyboard-dark-mode .copyboard-toggle-btn.enabled {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-toggle-btn.disabled {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-add-btn {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-clear-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-close-btn {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+    color: #d1d5db !important;
+}
+
+#copyboard-floating.copyboard-dark-mode .copyboard-close-btn:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: #ffffff !important;
+}
+
+/* 스크롤바 다크 모드 */
+#copyboard-floating.copyboard-dark-mode ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+#copyboard-floating.copyboard-dark-mode ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#copyboard-floating.copyboard-dark-mode ::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+#copyboard-floating.copyboard-dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: transparent;
+}
+
+/* 플로팅 박스 헤더 */
+.copyboard-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--light-border);
+    background: var(--light-header-bg);
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyboard-title-area {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.copyboard-title {
+    margin: 0;
+    color: var(--light-text);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.copyboard-button-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* 버튼 스타일 */
+.copyboard-toggle-btn {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 11px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.2);
+    white-space: nowrap;
+}
+
+.copyboard-toggle-btn.disabled {
+    background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+}
+
+.copyboard-toggle-btn:hover {
+    transform: translateY(-1px);
+}
+
+.copyboard-toggle-btn:hover.enabled {
+    box-shadow: 0 6px 12px rgba(5, 150, 105, 0.3);
+}
+
+.copyboard-toggle-btn:hover.disabled {
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+}
+
+.copyboard-close-btn {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copyboard-close-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* 컨텐츠 영역 */
+.copyboard-content {
+    padding: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.copyboard-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.copyboard-textarea {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid var(--light-border);
+    border-radius: 6px;
+    font-size: 13px;
+    min-height: 50px;
+    resize: vertical;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    color: var(--light-text);
+    background: var(--light-bg);
+}
+
+.copyboard-textarea:focus {
+    border-color: #4f46e5;
+}
+
+.copyboard-textarea::placeholder {
+    color: #6b7280;
+}
+
+.copyboard-add-btn {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.2);
+}
+
+.copyboard-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+}
+
+/* 컨트롤 영역 */
+.copyboard-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.copyboard-stats {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.copyboard-stats strong {
+    color: #4f46e5;
+}
+
+.copyboard-clear-btn {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+}
+
+.copyboard-clear-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+}
+
+/* 히스토리 아이템 */
+.copyboard-history-item {
+    padding: 12px;
+    border: 1px solid #f3f4f6;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--light-bg);
+}
+
+.copyboard-history-item:hover {
+    border-color: #4f46e5;
+    background: var(--light-button-hover);
+}
+
+.copyboard-history-item-text {
+    font-size: 13px;
+    color: var(--light-text);
+    margin-bottom: 6px;
+    word-break: break-word;
+    line-height: 1.4;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.copyboard-history-item:hover .copyboard-history-item-text {
+    transform: translateX(5px);
+}
+
+.copyboard-history-item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyboard-history-item-date {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.copyboard-history-item-delete {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 4px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 10px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transform: scale(0.9);
+}
+
+.copyboard-history-item-delete.hovered {
+    opacity: 1;
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* 히스토리 아이템 호버 상태 업데이트 */
+.copyboard-history-item.hovered {
+    border-color: #4f46e5;
+    background: var(--light-button-hover);
+}
+
+/* 빈 상태 */
+.copyboard-empty {
+    text-align: center;
+    padding: 30px;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.copyboard-empty small {
+    margin-top: 6px;
+    display: block;
+}
+
+/* 토스트 알림 */
+.copyboard-auto-save-notification {
+    position: fixed;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 999998;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    box-shadow: 0 8px 25px -5px rgba(5, 150, 105, 0.4), 0 0 0 1px rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transform: translateY(-20px) scale(0.9);
+    opacity: 0;
+    animation: modernDropIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.copyboard-copy-feedback {
+    position: fixed;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    z-index: 9999998;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    box-shadow: 0 2px 4px -1px rgba(5, 150, 105, 0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    animation: popInPlace 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    pointer-events: none;
+}
+
+/* 애니메이션 */
+@keyframes slideInFloating {
+    0% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(-10px) scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutFloating {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes modernDropIn {
+    0% {
+        transform: translateY(-20px) scale(0.9);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(5px) scale(1.02);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes modernFadeOut {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10px) scale(0.95);
+        opacity: 0;
+    }
+}
+
+@keyframes popInPlace {
+    0% {
+        transform: translateX(-50%) translateY(-100%) scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(-50%) translateY(-10px) scale(1.1);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateX(-50%) translateY(-20px) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOutPlace {
+    0% {
+        transform: translateX(-50%) translateY(-20px) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) translateY(-40px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes pulseIcon {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg); 
+    }
+    25% { 
+        transform: scale(1.2) rotate(-5deg); 
+    }
+    75% { 
+        transform: scale(1.1) rotate(5deg); 
+    }
+}
+
+/* 히스토리 토스트 애니메이션 */
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes progress {
+    0% {
+        width: 100%;
+    }
+    100% {
+        width: 0%;
+    }
+}
+
+/* 접근성 개선 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .dark-mode-toggle,
+    .dark-mode-toggle .icon,
+    #copyboard-floating,
+    #copyboard-floating * {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .dark-mode-toggle:hover .icon {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    #copyboard-floating {
+        width: calc(100vw - 40px);
+        right: 20px;
+        left: 20px;
+    }
+}
+
+/* 포커스 스타일 */
+button:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+}
+
+/* 높은 대비 모드 지원 */
+@media (prefers-contrast: high) {
+    .copyboard-history-item {
+        border-width: 2px;
+    }
+    
+    button {
+        border: 2px solid currentColor;
+    }
+    
+    #copyboard-floating.copyboard-dark-mode {
+        border: 2px solid var(--dark-border) !important;
+    }
+    
+    #copyboard-floating.copyboard-dark-mode .copyboard-history-item {
+        border: 2px solid var(--dark-border) !important;
+    }
+    
+    .dark-mode-toggle {
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* 다크 모드 토글 애니메이션 */
+@keyframes iconShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+    75% { transform: rotate(-2deg); }
+}
+
+@keyframes iconRotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+} 
