@@ -1,4 +1,5 @@
 let copyHistory = [];
+let historyBackup = null; // 백업 저장용
 const MAX_HISTORY_SIZE = 10;
 
 // 저장소에서 기록 로드
@@ -79,10 +80,26 @@ const deleteHistoryItem = (itemId) => {
     return false;
 };
 
-// 전체 기록 삭제
+// 히스토리 전체 삭제 (백업 포함)
 const clearHistory = () => {
+    // 현재 히스토리를 백업에 저장
+    historyBackup = [...copyHistory];
+    
     copyHistory = [];
     saveHistory();
+    console.log('CopyBoard: 히스토리 삭제됨 (백업 저장됨)', historyBackup.length, '개 항목');
+};
+
+// 히스토리 복원
+const restoreHistory = () => {
+    if (historyBackup && historyBackup.length > 0) {
+        copyHistory = [...historyBackup];
+        saveHistory();
+        console.log('CopyBoard: 히스토리 복원됨', copyHistory.length, '개 항목');
+        historyBackup = null; // 백업 클리어
+        return true;
+    }
+    return false;
 };
 
 // 플로팅 박스 토글 함수
@@ -101,9 +118,9 @@ const toggleFloatingBox = async () => {
             action: 'toggleFloating',
         });
 
-        console.log('CopyBoard: 키보드 단축키로 플로팅 박스 토글됨', response);
+        console.log('CopyBoard: 플로팅 박스 토글됨', response);
     } catch (error) {
-        console.error('CopyBoard: 키보드 단축키 플로팅 박스 토글 실패:', error);
+        console.error('CopyBoard: 플로팅 박스 토글 실패:', error);
 
         // content script가 로드되지 않은 페이지에서는 알림만 표시
         chrome.notifications
@@ -124,16 +141,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('CopyBoard: 메시지 수신됨:', request.action);
 
     switch (request.action) {
-        case 'saveCopiedText':
-            // 기존 방식 (호환성 유지)
-            if (request.text) {
-                const success = addToHistory(request.text);
-                sendResponse({ success });
-            }
-            break;
-
         case 'addToHistory':
-            // 새로운 방식
             if (request.text) {
                 const success = addToHistory(request.text);
                 sendResponse({ success });
@@ -159,23 +167,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({ success: true });
             break;
 
-        case 'exportHistory':
-            const exportData = {
-                timestamp: new Date().toISOString(),
-                count: copyHistory.length,
-                items: copyHistory,
-            };
-            sendResponse({ data: exportData });
-            break;
-
-        case 'importHistory':
-            if (request.data && Array.isArray(request.data)) {
-                copyHistory = request.data.slice(0, MAX_HISTORY_SIZE);
-                saveHistory();
-                sendResponse({ success: true, count: copyHistory.length });
-            } else {
-                sendResponse({ success: false, error: '잘못된 데이터 형식' });
-            }
+        case 'restoreHistory':
+            const restored = restoreHistory();
+            sendResponse({ success: restored });
             break;
 
         default:
@@ -197,26 +191,8 @@ chrome.commands.onCommand.addListener((command) => {
 
 // 확장 프로그램 아이콘 클릭 시 플로팅 박스 토글
 chrome.action.onClicked.addListener(async (tab) => {
-    try {
-        // 활성 탭에 플로팅 박스 토글 메시지 전송
-        const response = await chrome.tabs.sendMessage(tab.id, {
-            action: 'toggleFloating',
-        });
-        console.log('CopyBoard: 플로팅 박스 토글됨', response);
-    } catch (error) {
-        console.error('CopyBoard: 플로팅 박스 토글 실패:', error);
-
-        // content script가 로드되지 않은 경우 팝업 열기
-        try {
-            await chrome.action.setPopup({ popup: 'popup.html' });
-            // 잠시 후 다시 팝업 제거 (다음 클릭에서는 플로팅 박스 시도)
-            setTimeout(() => {
-                chrome.action.setPopup({ popup: '' });
-            }, 100);
-        } catch (popupError) {
-            console.error('CopyBoard: 팝업 설정 실패:', popupError);
-        }
-    }
+    console.log('CopyBoard: 확장 아이콘 클릭됨');
+    await toggleFloatingBox();
 });
 
 // 컨텍스트 메뉴 생성
@@ -233,12 +209,12 @@ chrome.runtime.onInstalled.addListener(() => {
         // 페이지에 대한 컨텍스트 메뉴 추가
         chrome.contextMenus.create({
             id: 'copyboard-toggle-floating',
-            title: '📋 CopyBoard 토글 (Ctrl+Shift+C)',
+            title: '📋 CopyBoard 플로팅 모드',
             contexts: ['page'],
         });
     });
 
-    console.log('CopyBoard: 확장 프로그램 설치/업데이트됨');
+    console.log('CopyBoard: 확장 프로그램 설치/업데이트됨 (플로팅 모드 전용)');
 });
 
 // 컨텍스트 메뉴 클릭 처리
@@ -257,17 +233,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             });
     } else if (info.menuItemId === 'copyboard-toggle-floating') {
         // 플로팅 박스 토글
-        chrome.tabs
-            .sendMessage(tab.id, {
-                action: 'toggleFloating',
-            })
-            .catch((error) => {
-                console.error('CopyBoard: 플로팅 박스 토글 실패:', error);
-            });
+        toggleFloatingBox();
     }
 });
 
 // 확장 프로그램 시작 시 기록 로드
 loadHistory();
 
-console.log('CopyBoard: Background script 로드됨');
+console.log('CopyBoard: Background script 로드됨 (플로팅 모드 전용)');
