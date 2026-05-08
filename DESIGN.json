@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-08T00:00:00Z",
+  "title": "Design System: CopyBoard",
+  "extensions": {
+    "colorMeta": {
+      "ink-indigo": {
+        "role": "primary",
+        "displayName": "Ink Indigo",
+        "canonical": "oklch(54% 0.21 277)",
+        "tonalRamp": [
+          "#1e1b4b",
+          "#312e81",
+          "#3730a3",
+          "#4338ca",
+          "#4f46e5",
+          "#6366f1",
+          "#818cf8",
+          "#a5b4fc"
+        ]
+      },
+      "ink-indigo-soft": {
+        "role": "primary",
+        "displayName": "Ink Indigo Soft",
+        "canonical": "oklch(96% 0.02 277)",
+        "tonalRamp": [
+          "#312e81",
+          "#3730a3",
+          "#4338ca",
+          "#6366f1",
+          "#a5b4fc",
+          "#c7d2fe",
+          "#e0e7ff",
+          "#eef2ff"
+        ]
+      },
+      "ink-indigo-dim": {
+        "role": "primary",
+        "displayName": "Ink Indigo Dim",
+        "canonical": "oklch(72% 0.15 277)",
+        "tonalRamp": [
+          "#3730a3",
+          "#4338ca",
+          "#4f46e5",
+          "#6366f1",
+          "#818cf8",
+          "#a5b4fc",
+          "#c7d2fe",
+          "#e0e7ff"
+        ]
+      },
+      "sand-cream": {
+        "role": "neutral",
+        "displayName": "Sand Cream",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "#111827",
+          "#1f2937",
+          "#374151",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#f3f4f6",
+          "#ffffff"
+        ]
+      },
+      "sand-cream-elevated": {
+        "role": "neutral",
+        "displayName": "Sand Cream Elevated",
+        "canonical": "oklch(98% 0.003 277)",
+        "tonalRamp": [
+          "#111827",
+          "#374151",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#e5e7eb",
+          "#f3f4f6",
+          "#f9fafb"
+        ]
+      },
+      "sand-cream-warm": {
+        "role": "neutral",
+        "displayName": "Sand Cream Warm",
+        "canonical": "oklch(96% 0.005 277)",
+        "tonalRamp": [
+          "#111827",
+          "#374151",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#e5e7eb",
+          "#f3f4f6",
+          "#f9fafb"
+        ]
+      },
+      "graphite-900": {
+        "role": "neutral",
+        "displayName": "Graphite 900",
+        "canonical": "oklch(20% 0.03 257)",
+        "tonalRamp": [
+          "#030712",
+          "#111827",
+          "#1f2937",
+          "#374151",
+          "#4b5563",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db"
+        ]
+      },
+      "graphite-500": {
+        "role": "neutral",
+        "displayName": "Graphite 500",
+        "canonical": "oklch(50% 0.02 257)",
+        "tonalRamp": [
+          "#1f2937",
+          "#374151",
+          "#4b5563",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#e5e7eb",
+          "#f3f4f6"
+        ]
+      },
+      "graphite-200": {
+        "role": "neutral",
+        "displayName": "Graphite 200",
+        "canonical": "oklch(91% 0.01 257)",
+        "tonalRamp": [
+          "#374151",
+          "#4b5563",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#e5e7eb",
+          "#f3f4f6",
+          "#f9fafb"
+        ]
+      },
+      "late-night-slate": {
+        "role": "neutral",
+        "displayName": "Late Night Slate",
+        "canonical": "oklch(28% 0.04 257)",
+        "tonalRamp": [
+          "#030712",
+          "#0f172a",
+          "#111827",
+          "#1f2937",
+          "#374151",
+          "#4b5563",
+          "#6b7280",
+          "#94a3b8"
+        ]
+      },
+      "late-night-deep": {
+        "role": "neutral",
+        "displayName": "Late Night Deep",
+        "canonical": "oklch(20% 0.04 257)",
+        "tonalRamp": [
+          "#030712",
+          "#0f172a",
+          "#111827",
+          "#1e293b",
+          "#334155",
+          "#475569",
+          "#64748b",
+          "#94a3b8"
+        ]
+      },
+      "late-night-soft": {
+        "role": "neutral",
+        "displayName": "Late Night Soft",
+        "canonical": "oklch(38% 0.04 257)",
+        "tonalRamp": [
+          "#0f172a",
+          "#1e293b",
+          "#334155",
+          "#475569",
+          "#64748b",
+          "#94a3b8",
+          "#cbd5e1",
+          "#e2e8f0"
+        ]
+      },
+      "blade-emerald": {
+        "role": "tertiary",
+        "displayName": "Blade Emerald",
+        "canonical": "oklch(72% 0.18 158)",
+        "tonalRamp": [
+          "#022c22",
+          "#064e3b",
+          "#065f46",
+          "#047857",
+          "#059669",
+          "#10b981",
+          "#34d399",
+          "#a7f3d0"
+        ]
+      },
+      "blade-vermilion": {
+        "role": "tertiary",
+        "displayName": "Blade Vermilion",
+        "canonical": "oklch(64% 0.21 26)",
+        "tonalRamp": [
+          "#450a0a",
+          "#7f1d1d",
+          "#991b1b",
+          "#b91c1c",
+          "#dc2626",
+          "#ef4444",
+          "#f87171",
+          "#fecaca"
+        ]
+      },
+      "blade-amber": {
+        "role": "tertiary",
+        "displayName": "Blade Amber",
+        "canonical": "oklch(76% 0.18 71)",
+        "tonalRamp": [
+          "#451a03",
+          "#78350f",
+          "#92400e",
+          "#b45309",
+          "#d97706",
+          "#f59e0b",
+          "#fbbf24",
+          "#fde68a"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "spotlight-prompt": { "displayName": "Spotlight Prompt", "purpose": "Spotlight 모달 입력. 시스템에서 가장 큰 글자." },
+      "headline": { "displayName": "Headline", "purpose": "플로팅 패널 헤더 제목 — 단 한 곳." },
+      "body": { "displayName": "Body", "purpose": "카드 텍스트, 설명, placeholder." },
+      "label": { "displayName": "Label", "purpose": "콘텐츠 타입 배지, UPPERCASE 작은 라벨." },
+      "mono": { "displayName": "Mono", "purpose": "코드 블록, 키보드 힌트(<kbd>)." }
+    },
+    "shadows": [
+      { "name": "resting", "value": "none", "purpose": "카드 기본 상태. 그림자 없음, 1px 보더만." },
+      { "name": "hover-lift", "value": "0 4px 14px -4px rgba(79, 70, 229, 0.25)", "purpose": "카드 호버. Indigo가 살짝 번지는 ambient." },
+      { "name": "floating-panel", "value": "0 20px 25px -5px rgba(0,0,0,0.12), 0 8px 10px -6px rgba(0,0,0,0.06)", "purpose": "페이지 위에 떠 있는 플로팅 패널의 깊이." },
+      { "name": "spotlight-heroic", "value": "0 30px 60px -15px rgba(0,0,0,0.4)", "purpose": "Spotlight 모달 단독. 시스템의 유일한 진짜 입체." }
+    ],
+    "motion": [
+      { "name": "ease-pocketknife", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "시스템 표준 ease-out. 모든 transition / animation에 사용." },
+      { "name": "duration-fast", "value": "180ms", "purpose": "Spotlight 페이드, 토스트 leaving." },
+      { "name": "duration-standard", "value": "220ms", "purpose": "카드 호버, 버튼 상태 전환, 토스트 reflow." },
+      { "name": "duration-pop", "value": "320ms", "purpose": "플로팅 패널 슬라이드인, Spotlight 패널 등장." }
+    ],
+    "breakpoints": [
+      { "name": "narrow", "value": "480px", "purpose": "플로팅 패널과 Spotlight 패널이 viewport 폭에 맞춰 풀 너비로 전환." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Smart Card — URL",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "URL을 favicon + host + path 로 미리보는 시그니처 카드.",
+      "html": "<article class=\"ds-card\" tabindex=\"0\" role=\"button\" aria-label=\"URL 항목, 클릭하여 복사\"><header class=\"ds-card-head\"><span class=\"ds-badge ds-badge-url\">URL</span><time class=\"ds-card-date\">3분 전</time><button class=\"ds-card-delete\" aria-label=\"삭제\">×</button></header><div class=\"ds-card-row\"><img class=\"ds-favicon\" src=\"https://www.google.com/s2/favicons?sz=32&domain=linear.app\" alt=\"\" /><div class=\"ds-stack\"><div class=\"ds-strong\">linear.app</div><div class=\"ds-muted\">https://linear.app/changelog</div></div></div></article>",
+      "css": ".ds-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s cubic-bezier(.2,.8,.2,1);outline:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111827}.ds-card:hover,.ds-card:focus-visible{border-color:#4f46e5;box-shadow:0 4px 14px -4px rgba(79,70,229,.25);transform:translateY(-1px)}.ds-card-head{display:flex;align-items:center;gap:8px}.ds-badge{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px}.ds-badge-url{background:#dbeafe;color:#1d4ed8}.ds-card-date{margin-left:auto;font-size:11px;color:#6b7280}.ds-card-delete{width:22px;height:22px;border-radius:50%;border:none;background:transparent;color:#6b7280;font-size:16px;line-height:1;cursor:pointer;opacity:0;transition:all .22s cubic-bezier(.2,.8,.2,1)}.ds-card:hover .ds-card-delete{opacity:1}.ds-card-delete:hover{background:#ef4444;color:#fff;transform:rotate(90deg)}.ds-card-row{display:flex;gap:10px;align-items:center;font-size:13px}.ds-favicon{width:28px;height:28px;border-radius:6px;flex-shrink:0;background:#f3f4f6}.ds-stack{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.ds-strong{font-weight:600;word-break:break-all}.ds-muted{color:#6b7280;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"
+    },
+    {
+      "name": "Smart Card — Color",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "색상 코드를 컬러 칩 + RGB 분해로 보여주는 카드. 칩 배경엔 알파 표현용 체커보드.",
+      "html": "<article class=\"ds-card\" tabindex=\"0\" role=\"button\" aria-label=\"Color 항목, 클릭하여 복사\"><header class=\"ds-card-head\"><span class=\"ds-badge ds-badge-color\">COLOR</span><time class=\"ds-card-date\">방금</time></header><div class=\"ds-card-row\"><span class=\"ds-chip\" style=\"--c:#4f46e5\"></span><div class=\"ds-stack\"><div class=\"ds-strong\">#4f46e5</div><div class=\"ds-muted\">rgb(79, 70, 229)</div></div></div></article>",
+      "css": ".ds-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;transition:all .22s cubic-bezier(.2,.8,.2,1);font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#111827}.ds-card:hover{border-color:#4f46e5;box-shadow:0 4px 14px -4px rgba(79,70,229,.25);transform:translateY(-1px)}.ds-badge{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px}.ds-badge-color{background:#fef3c7;color:#92400e}.ds-card-head{display:flex;align-items:center;gap:8px}.ds-card-date{margin-left:auto;font-size:11px;color:#6b7280}.ds-card-row{display:flex;gap:10px;align-items:center;font-size:13px}.ds-chip{width:32px;height:32px;border-radius:8px;flex-shrink:0;border:1px solid #e5e7eb;position:relative;background-color:var(--c);background-image:linear-gradient(45deg,#f0f0f0 25%,transparent 25%),linear-gradient(-45deg,#f0f0f0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f0f0f0 75%),linear-gradient(-45deg,transparent 75%,#f0f0f0 75%);background-size:8px 8px;background-position:0 0,0 4px,4px -4px,-4px 0;box-shadow:inset 0 0 0 32px var(--c)}.ds-stack{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.ds-strong{font-weight:600;font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-size:13px}.ds-muted{color:#6b7280;font-size:11.5px;font-family:'JetBrains Mono','SF Mono',Menlo,monospace}"
+    },
+    {
+      "name": "Spotlight Modal",
+      "kind": "custom",
+      "refersTo": "spotlight-input",
+      "description": "Cmd+Shift+V 로 열리는 화면 중앙 모달. 시스템에서 유일한 진짜 입체.",
+      "html": "<div class=\"ds-spot\" role=\"dialog\" aria-modal=\"true\"><div class=\"ds-spot-panel\"><input class=\"ds-spot-input\" type=\"text\" placeholder=\"클립보드 검색...\" /><ul class=\"ds-spot-list\" role=\"listbox\"><li class=\"ds-spot-row ds-spot-active\" role=\"option\"><span class=\"ds-badge ds-badge-url\">URL</span><span class=\"ds-spot-text\">linear.app/changelog</span></li><li class=\"ds-spot-row\" role=\"option\"><span class=\"ds-badge ds-badge-code\">CODE</span><span class=\"ds-spot-text\">const router = useRouter()</span></li></ul><div class=\"ds-spot-hint\"><span><kbd>↑↓</kbd> 선택</span><span><kbd>Enter</kbd> 복사</span><span><kbd>Esc</kbd> 닫기</span></div></div></div>",
+      "css": ".ds-spot{position:relative;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:32px 0;display:flex;justify-content:center}.ds-spot-panel{width:min(520px,100%);background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 30px 60px -15px rgba(0,0,0,.4);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,sans-serif;animation:ds-pop-in .22s cubic-bezier(.2,.8,.2,1)}@keyframes ds-pop-in{from{transform:translateY(-12px) scale(.97);opacity:0}to{transform:none;opacity:1}}.ds-spot-input{width:100%;height:56px;padding:0 22px;border:none;outline:none;background:transparent;color:#111827;font-size:18px;font-family:inherit;border-bottom:1px solid #e5e7eb}.ds-spot-input::placeholder{color:#6b7280}.ds-spot-list{list-style:none;margin:0;padding:6px}.ds-spot-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background .22s cubic-bezier(.2,.8,.2,1)}.ds-spot-row:hover{background:#f3f4f6}.ds-spot-active{background:#eef2ff!important;outline:1px solid #4f46e5}.ds-badge{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;flex-shrink:0;width:60px;text-align:center}.ds-badge-url{background:#dbeafe;color:#1d4ed8}.ds-badge-code{background:#e0e7ff;color:#3730a3}.ds-spot-text{flex:1;min-width:0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#111827}.ds-spot-hint{display:flex;gap:16px;padding:8px 16px;border-top:1px solid #e5e7eb;background:#f9fafb;font-size:11px;color:#6b7280}.ds-spot-hint kbd{font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-size:10px;padding:1px 5px;border:1px solid #e5e7eb;border-radius:3px;background:#fff;margin-right:3px}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "수동 추가, 주요 confirm 액션. 한 화면에 한 개 이내.",
+      "html": "<button class=\"ds-btn-primary\">+ 추가</button>",
+      "css": ".ds-btn-primary{background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;transition:background .22s cubic-bezier(.2,.8,.2,1),transform .22s cubic-bezier(.2,.8,.2,1);box-shadow:none}.ds-btn-primary:hover{background:#4338ca}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:2px solid #4f46e5;outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Danger Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "전체 삭제 같은 위험 액션. 호버 시에만 채워진다.",
+      "html": "<button class=\"ds-btn-ghost\">전체 삭제</button>",
+      "css": ".ds-btn-ghost{background:transparent;color:#ef4444;border:1px solid #e5e7eb;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;transition:all .22s cubic-bezier(.2,.8,.2,1)}.ds-btn-ghost:hover{background:#ef4444;color:#fff;border-color:#ef4444}.ds-btn-ghost:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Detection Pill (ON)",
+      "kind": "chip",
+      "refersTo": "pill-detection-on",
+      "description": "자동 복사 감지 ON 상태. Blade Emerald는 의미 전달용 — 데코 아님.",
+      "html": "<button class=\"ds-pill ds-pill-on\">자동 감지 ON</button>",
+      "css": ".ds-pill{border:1px solid transparent;font-size:11px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,sans-serif;transition:all .22s cubic-bezier(.2,.8,.2,1)}.ds-pill-on{background:#10b981;border-color:#10b981;color:#fff}.ds-pill-on:hover{background:#059669;border-color:#059669}"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "플로팅 패널 상단 검색. 포커스 시 Indigo 링.",
+      "html": "<input class=\"ds-input-search\" type=\"search\" placeholder=\"🔍 검색...\" />",
+      "css": ".ds-input-search{width:100%;height:36px;padding:0 12px;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;color:#111827;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;outline:none;transition:border-color .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s cubic-bezier(.2,.8,.2,1)}.ds-input-search:focus{border-color:#4f46e5;box-shadow:0 0 0 3px #eef2ff}.ds-input-search::placeholder{color:#6b7280}"
+    },
+    {
+      "name": "Content Type Badge",
+      "kind": "chip",
+      "refersTo": "badge-content-type",
+      "description": "콘텐츠 종류 라벨. UPPERCASE 9.5px. 색만으로 의미를 전달하지 않도록 텍스트 라벨이 항상 함께.",
+      "html": "<div class=\"ds-badge-row\"><span class=\"ds-badge-ct ds-ct-url\">URL</span><span class=\"ds-badge-ct ds-ct-color\">COLOR</span><span class=\"ds-badge-ct ds-ct-json\">JSON</span><span class=\"ds-badge-ct ds-ct-code\">CODE</span></div>",
+      "css": ".ds-badge-row{display:flex;gap:6px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif}.ds-badge-ct{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px}.ds-ct-url{background:#dbeafe;color:#1d4ed8}.ds-ct-color{background:#fef3c7;color:#92400e}.ds-ct-json{background:#fee2e2;color:#991b1b}.ds-ct-code{background:#e0e7ff;color:#3730a3}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pocketknife",
+    "overview": "CopyBoard는 한 손에 쥐는 정밀한 도구다. 평소엔 접혀 있고, 일단 펼치면 모든 날이 제자리에 있다. 칼날(Spotlight)은 빠르고 정확하며, 손잡이(플로팅 패널)는 손에 익는 형태고, 표면(neutral 배경)은 점잖은 가죽 케이스 같은 색을 띤다. 화려하지 않다. 다만 잘 만들어졌고, 만든 사람의 손맛이 느껴진다. 이 시스템은 기업 SaaS 대시보드 클리셰, Material Design 표준 룩, 기존 Chrome 확장 클리셰를 명시적으로 거부한다. AI 슬롭 미감 — 무지개 그라데이션 텍스트, 의미 없는 글래스모피즘, 측면 컬러 스트라이프 — 도 같다.",
+    "keyCharacteristics": [
+      "키보드가 마우스보다 먼저 도달하는 인터페이스",
+      "콘텐츠 종류에 따라 카드의 얼굴이 바뀜 (균일성의 반대)",
+      "평면이 기본, 그림자는 인터랙션의 이벤트",
+      "한 가지 액센트(Ink Indigo), 한 가지 라디우스 패밀리, 한 가지 모션 곡선",
+      "1인 OSS 답게 깎인 디테일 — 매칭 글자 하이라이트, 손에 익는 단축키"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "시스템의 정체성을 책임지는 색은 Ink Indigo 단 하나다. 화면의 10% 이내에서만 등장한다. 두 번째 액센트를 만들고 싶다면 만들지 마라.", "section": "colors" },
+      { "name": "The Tinted Neutral Rule", "body": "모든 neutral은 Indigo hue 쪽으로 미세하게 기울어야 한다. #ffffff / #000 같은 무채색은 사용하지 않는다.", "section": "colors" },
+      { "name": "The Category-Reflex Refusal", "body": "클립보드 = 노랑, 생산성 = 보라 같은 카테고리 자동 반응을 거부한다.", "section": "colors" },
+      { "name": "The Single Voice Rule", "body": "폰트 패밀리는 단 두 개 — 시스템 산세리프 + JetBrains Mono. 추가 임포트 금지.", "section": "typography" },
+      { "name": "The Quiet Hierarchy Rule", "body": "헤딩은 한 화면당 한 개를 넘지 않는다. 강조는 색이 아니라 weight 와 위치로.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "표면은 평소 평평하다. 그림자는 인터랙션의 결과로만 나타난다.", "section": "elevation" },
+      { "name": "The Heroic Spotlight Rule", "body": "시스템에서 가장 강한 elevation은 Spotlight 모달에만 허용된다.", "section": "elevation" },
+      { "name": "The Card Affords A Click Rule", "body": "카드 전체가 클릭 영역이다. 안의 텍스트나 favicon이 아닌, 카드 자체가 액션이다.", "section": "components" },
+      { "name": "The Hover Reveals Affordance Rule", "body": "삭제 버튼은 호버 전엔 투명. 카드의 시각 노이즈를 줄이고, 의도가 생긴 순간에만 등장.", "section": "components" }
+    ],
+    "dos": [
+      "Do Ink Indigo (#4f46e5)를 화면의 10% 이내에서만 사용한다. The One Voice Rule.",
+      "Do 모든 neutral을 Indigo hue 방향으로 미세하게 틴트한다 (chroma 0.005–0.01). 순백/순흑은 사용하지 않는다.",
+      "Do 모션은 200–280ms exponential ease-out 한 가지 곡선만 사용한다 (cubic-bezier(0.2, 0.8, 0.2, 1)).",
+      "Do 그림자는 인터랙션의 결과로만 등장시킨다. 평소엔 1px 보더.",
+      "Do 콘텐츠 타입 배지는 색 + 라벨 텍스트를 항상 함께 표시한다 (색맹 친화).",
+      "Do Spotlight는 시스템에서 가장 큰 그림자를 단독으로 차지한다. The Heroic Spotlight Rule.",
+      "Do 키보드 단축키 힌트는 항상 <kbd> 요소 + monospace로."
+    ],
+    "donts": [
+      "Don't 측면 컬러 스트라이프 (border-left: 4px solid ...)를 사용하지 않는다. AI 슬롭 미감.",
+      "Don't 그라데이션 텍스트 (background-clip: text)를 사용하지 않는다. Indigo 단색이면 충분하다.",
+      "Don't 글래스모피즘을 데코로 사용하지 않는다. 유일한 backdrop-filter는 Spotlight 백드롭 한 곳.",
+      "Don't 거대한 헤로 메트릭 / 좌측 사이드바 + 카드 그리드 / Welcome back 인사말. 기업 SaaS 대시보드 클리셰.",
+      "Don't Roboto + 푸른색 FAB + 5dp 그림자 같은 Material Design 표준 룩.",
+      "Don't 두꺼운 그라데이션 헤더 + 형광 액센트 배지의 1Password/Honey 류 팝오버. 기존 Chrome 확장 클리셰.",
+      "Don't Indigo 외 두 번째 액센트를 도입하지 않는다. Blade Emerald / Vermilion / Amber는 액센트가 아니라 의미 전달.",
+      "Don't 균일한 카드 그리드를 만들지 않는다. CopyBoard의 정체성은 카드의 얼굴이 콘텐츠 종류에 따라 달라지는 것.",
+      "Don't 모달을 첫 번째 답으로 쓰지 않는다. Spotlight 외의 모든 인터랙션은 inline.",
+      "Don't 클립보드 → 노랑, 생산성 → 보라 같은 카테고리 자동 반응을 따르지 않는다. The Category-Reflex Refusal."
+    ]
+  }
+}

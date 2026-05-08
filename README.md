@@ -1,55 +1,104 @@
-# CopyBoard - 클립보드 관리
+# CopyBoard 2.0
 
-페이지에서 복사한 텍스트를 자동으로 저장하고 관리하는 Chrome 확장 프로그램입니다.
+복사한 콘텐츠를 자동 저장하고, **Smart Card** UI 와 **Spotlight** 빠른 붙여넣기로
+다시 꺼내쓰는 Chrome 확장 프로그램.
 
-## 주요 기능
+## 새로 추가된 핵심 기능
 
-- **자동 복사 감지**: 페이지에서 텍스트를 복사하면 자동으로 히스토리에 저장
-- **플로팅 박스**: 페이지에 떠다니는 클립보드 관리 인터페이스
-- **토스트 UI**: 세련된 알림 시스템으로 작업 상태 표시
-- **히스토리 관리**: 최대 10개의 복사 기록 저장 및 관리
-- **취소/복원**: 실수로 삭제한 히스토리 복원 기능
-- **반응형 UI**: 다크 모드 지원 및 모던한 디자인
+### ⚡ Spotlight (`Ctrl/Cmd + Shift + V`)
+- 화면 중앙에 모달 검색창
+- 퍼지(fuzzy) 매칭 + 매칭 글자 하이라이트
+- 키보드만으로 항해: `↑↓` 이동, `Enter` 복사, `Esc` 닫기
+- 마우스 클릭으로도 동작
 
-## 프로젝트 구조
+### 🃏 Smart Content Cards
+복사한 텍스트의 **종류를 감지**해 카드 모양이 달라집니다.
+
+| 종류 | 카드 |
+| --- | --- |
+| URL | favicon + host + 풀 URL |
+| Email | `mailto:` 링크 |
+| Phone | `tel:` 링크 |
+| Color (`#hex`, `rgb()`, `hsl()`) | 색상 칩 + RGB 변환 |
+| JSON | pretty-print (12 lines preview) |
+| Code | 언어 자동 감지 라벨 + monospace |
+| Markdown | 줄바꿈 보존 |
+| Plain | 일반 텍스트 |
+
+### 🔍 검색 + 무제한 히스토리
+- 플로팅 박스 상단 검색 인풋 (실시간 필터)
+- 최대 저장 항목 `10 → 50` 으로 확장
+
+### 🌗 시스템 테마 자동 따라가기
+- 처음에는 OS 다크/라이트 모드를 자동 감지
+- 수동 토글 시점부터 사용자 선택 우선
+
+---
+
+## 기술 스택
+
+- **언어**: TypeScript 5 (strict + `noUncheckedIndexedAccess`)
+- **빌드**: Vite + `@crxjs/vite-plugin` (Manifest V3, HMR 지원)
+- **번들러**: Rollup (Vite 내장)
+- **저장소**: `chrome.storage.local` (LZ 압축은 v1 데이터 마이그레이션용으로만 잔존)
+
+## 디렉토리 구조
 
 ```
-copyboard/
-├── manifest.json          # 확장 프로그램 설정
-├── background.js          # 백그라운드 서비스 워커
-├── content.js             # 메인 컨트롤러
-├── css                    # CSS 파일들
-│   ├── content-styles.css # 전체 CSS
-├── js/                    # 모듈화된 JavaScript 파일들
-│   ├── copy-detection.js  # 복사 감지 시스템
-│   ├── dark-mode.js       # 복사 감지 시스템
-│   ├── floating-ui.js     # 플로팅 박스 UI
-│   ├── history-manager.js # 히스토리 관리
-│   ├── toast-system.js    # 토스트 알림 시스템
-└── icons/                 # 확장 프로그램 아이콘들
-    ├── icon16.png
-    ├── icon32.png
-    ├── icon48.png
-    └── icon128.png
+src/
+├── shared/              # 양쪽에서 공유
+│   ├── types.ts         # HistoryItem
+│   ├── messages.ts      # 타입 안전한 RPC
+│   └── constants.ts
+├── background/
+│   ├── index.ts         # 진입점 (메시지 라우팅, 단축키, 컨텍스트 메뉴)
+│   ├── history.ts       # CRUD + 백업/복원
+│   ├── storage.ts       # chrome.storage 어댑터
+│   └── legacy-decompress.ts  # v1 LZ 압축 해제 (read 전용)
+└── content/
+    ├── index.ts         # 진입점 + 메시지 핸들러
+    ├── content.css      # 스코프된 스타일
+    ├── core/
+    │   ├── rpc.ts           # background 호출 래퍼
+    │   ├── copy-detector.ts # copy/keydown 감지
+    │   ├── theme.ts         # 라이트/다크 컨트롤러
+    │   └── toast.ts         # 토스트 레이어
+    ├── detect/
+    │   └── content-type.ts  # 콘텐츠 종류 분류 (URL/JSON/색상/...)
+    ├── floating/
+    │   ├── floating-ui.ts   # 사이드 패널
+    │   └── smart-card.ts    # 타입별 카드 렌더러
+    └── spotlight/
+        ├── spotlight.ts     # 중앙 모달 + 키보드 네비
+        └── fuzzy.ts         # 퍼지 매처 + 하이라이트
 ```
 
-## 설치 및 개발
+## 개발
 
-### 개발자 모드로 설치
-1. Chrome에서 `chrome://extensions/` 접속
-2. 개발자 모드 활성화
-3. "압축해제된 확장 프로그램을 로드합니다" 클릭
-4. 프로젝트 폴더 선택
+```bash
+npm install
+npm run dev        # Vite + HMR (chrome://extensions 에서 dist/ 로드)
+npm run build      # 프로덕션 빌드 → dist/
+npm run typecheck  # tsc --noEmit
+```
 
-### 개발 환경
-- Chrome Extension Manifest V3
-- Vanilla JavaScript (ES6+)
-- CSS3 with CSS Variables
-- Modern Web APIs (Clipboard, ResizeObserver)
+### 확장 설치 (개발자 모드)
+1. `npm run build`
+2. Chrome → `chrome://extensions/`
+3. **개발자 모드** 활성화 → **압축해제된 확장 프로그램을 로드** → `dist/` 선택
 
+## 키보드 단축키
 
-## 사용법
+| 단축키 | 동작 |
+| --- | --- |
+| `Ctrl/Cmd + Shift + C` | 플로팅 박스 토글 |
+| `Ctrl/Cmd + Shift + V` | Spotlight 열기 |
+| Spotlight: `Enter` | 선택 항목 복사 |
+| Spotlight: `↑/↓` | 이동 |
+| Spotlight: `Esc` | 닫기 |
+| 플로팅 박스 textarea: `Ctrl/Cmd + Enter` | 수동 추가 |
 
-1. 웹페이지에서 텍스트 복사 → 자동 저장
-2. 확장 프로그램 아이콘 클릭 → 히스토리 확인
-3. 저장된 텍스트 클릭 → 클립보드에 복사
+## v1 → v2 마이그레이션
+
+기존 `chrome.storage.local` 의 v1 데이터(`copyHistory` 키, LZ 압축 포함)는
+첫 실행 시 자동으로 plain text 형식으로 변환됩니다. 사용자 액션 불필요.
