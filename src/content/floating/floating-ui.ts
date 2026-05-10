@@ -1,4 +1,5 @@
 import { FLOATING_ID, MAX_HISTORY_SIZE } from '@/shared/constants';
+import type { SitePolicyResponse } from '@/shared/messages';
 import type { HistoryItem } from '@/shared/types';
 import { ensureShadowRoot } from '@/content/core/host';
 import * as Rpc from '@/content/core/rpc';
@@ -20,6 +21,8 @@ export class FloatingUI {
   private listEl: HTMLElement | null = null;
   private statsEl: HTMLElement | null = null;
   private searchEl: HTMLInputElement | null = null;
+  private siteBtn: HTMLButtonElement | null = null;
+  private sitePolicy: SitePolicyResponse | null = null;
   private themeUnsub?: () => void;
 
   constructor(private deps: Deps) {}
@@ -40,7 +43,7 @@ export class FloatingUI {
     this.themeUnsub = this.deps.theme.subscribe((dark) => {
       this.root?.classList.toggle('cb-dark', dark);
     });
-    await this.refresh();
+    await Promise.all([this.refresh(), this.refreshSitePolicy()]);
     requestAnimationFrame(() => this.searchEl?.focus());
   }
 
@@ -62,6 +65,54 @@ export class FloatingUI {
   private async refresh(): Promise<void> {
     this.items = await Rpc.fetchHistory();
     this.render();
+  }
+
+  private async refreshSitePolicy(): Promise<void> {
+    try {
+      this.sitePolicy = await Rpc.getSitePolicy(location.href);
+    } catch {
+      this.sitePolicy = null;
+    }
+    this.renderSiteBtn();
+  }
+
+  private renderSiteBtn(): void {
+    const btn = this.siteBtn;
+    if (!btn) return;
+    const policy = this.sitePolicy;
+    if (!policy || !policy.domain) {
+      btn.style.display = 'none';
+      return;
+    }
+    btn.style.display = '';
+    const allowed = !policy.blocked;
+    btn.classList.toggle('cb-pill-on', allowed);
+    btn.classList.toggle('cb-pill-off', !allowed);
+    btn.textContent = `이 사이트 ${allowed ? 'ON' : 'OFF'}`;
+    btn.title = policy.defaultBlocked
+      ? `${policy.domain} (기본 정책으로 차단됨, 변경 불가)`
+      : `${policy.domain} — 클릭하여 ${allowed ? '차단' : '허용'}`;
+    btn.disabled = policy.defaultBlocked;
+    btn.style.cursor = policy.defaultBlocked ? 'not-allowed' : 'pointer';
+  }
+
+  private async toggleSiteBlocked(): Promise<void> {
+    const policy = this.sitePolicy;
+    if (!policy || !policy.domain || policy.defaultBlocked) return;
+    const next = !policy.blocked;
+    try {
+      this.sitePolicy = await Rpc.setSitePolicy(location.href, next);
+    } catch {
+      return;
+    }
+    this.renderSiteBtn();
+    showToast({
+      variant: 'info',
+      message: this.sitePolicy.blocked
+        ? `${this.sitePolicy.domain} 자동 저장 차단`
+        : `${this.sitePolicy.domain} 자동 저장 허용`,
+      durationMs: 1800,
+    });
   }
 
   private build(): HTMLElement {
@@ -123,6 +174,14 @@ export class FloatingUI {
       refreshDetect();
     };
     actions.appendChild(detectBtn);
+
+    const siteBtn = document.createElement('button');
+    siteBtn.type = 'button';
+    siteBtn.className = 'cb-pill';
+    siteBtn.textContent = '이 사이트 ...';
+    siteBtn.onclick = () => void this.toggleSiteBlocked();
+    this.siteBtn = siteBtn;
+    actions.appendChild(siteBtn);
 
     const themeBtn = document.createElement('button');
     themeBtn.type = 'button';
@@ -190,8 +249,11 @@ export class FloatingUI {
       const value = ta.value.trim();
       if (!value) return;
       ta.value = '';
-      const ok = await Rpc.saveHistory(value);
-      if (ok) await this.refresh();
+      const res = await Rpc.saveHistory(value);
+      if (res.success) await this.refresh();
+      else if (res.rejectedReason === 'sensitive') {
+        showToast({ variant: 'info', message: '민감정보로 감지되어 저장하지 않음', durationMs: 2400 });
+      }
     };
     addBtn.onclick = () => void submit();
     ta.addEventListener('keydown', (e) => {

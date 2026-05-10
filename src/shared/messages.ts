@@ -1,4 +1,5 @@
 import type { HistoryItem } from './types';
+import type { SensitiveKind } from './sensitive';
 
 export type RpcRequest =
   | { action: 'addToHistory'; text: string; url?: string }
@@ -6,17 +7,31 @@ export type RpcRequest =
   | { action: 'deleteHistoryItem'; itemId: string }
   | { action: 'clearHistory' }
   | { action: 'restoreHistory' }
+  | { action: 'getSitePolicy'; url: string }
+  | { action: 'setSitePolicy'; url: string; blocked: boolean }
   | { action: 'toggleFloating' }
   | { action: 'openSpotlight' }
   | { action: 'historyUpdated'; history: HistoryItem[] }
   | { action: 'showAutoSaveNotification' };
 
+export type AddToHistoryResponse =
+  | { success: true }
+  | { success: false; rejectedReason?: 'sensitive' | 'blocked'; sensitiveKind?: SensitiveKind };
+
+export type SitePolicyResponse = {
+  domain: string | null;
+  blocked: boolean;
+  defaultBlocked: boolean;
+};
+
 export type RpcResponse<R extends RpcRequest['action']> = {
-  addToHistory: { success: boolean };
+  addToHistory: AddToHistoryResponse;
   getHistory: { history: HistoryItem[]; count: number };
   deleteHistoryItem: { success: boolean };
   clearHistory: { success: boolean };
   restoreHistory: { success: boolean };
+  getSitePolicy: SitePolicyResponse;
+  setSitePolicy: SitePolicyResponse;
   toggleFloating: { success: boolean };
   openSpotlight: { success: boolean };
   historyUpdated: { success: boolean };

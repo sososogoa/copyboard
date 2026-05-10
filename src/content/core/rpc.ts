@@ -1,4 +1,5 @@
 import { sendToBackground } from '@/shared/messages';
+import type { AddToHistoryResponse, SitePolicyResponse } from '@/shared/messages';
 import type { HistoryItem } from '@/shared/types';
 
 export async function fetchHistory(): Promise<HistoryItem[]> {
@@ -6,11 +7,10 @@ export async function fetchHistory(): Promise<HistoryItem[]> {
   return res.history;
 }
 
-export async function saveHistory(text: string, url?: string): Promise<boolean> {
-  const res = await sendToBackground(
+export async function saveHistory(text: string, url?: string): Promise<AddToHistoryResponse> {
+  return await sendToBackground(
     url ? { action: 'addToHistory', text, url } : { action: 'addToHistory', text },
   );
-  return res.success;
 }
 
 export async function deleteItem(itemId: string): Promise<boolean> {
@@ -26,4 +26,12 @@ export async function clearAll(): Promise<boolean> {
 export async function restore(): Promise<boolean> {
   const res = await sendToBackground({ action: 'restoreHistory' });
   return res.success;
+}
+
+export async function getSitePolicy(url: string): Promise<SitePolicyResponse> {
+  return await sendToBackground({ action: 'getSitePolicy', url });
+}
+
+export async function setSitePolicy(url: string, blocked: boolean): Promise<SitePolicyResponse> {
+  return await sendToBackground({ action: 'setSitePolicy', url, blocked });
 }

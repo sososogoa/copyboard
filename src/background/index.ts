@@ -1,7 +1,11 @@
-import type { RpcRequest } from '@/shared/messages';
+import type { AddToHistoryResponse, RpcRequest } from '@/shared/messages';
+import { detectSensitive } from '@/shared/sensitive';
 import * as History from './history';
+import * as SitePolicy from './site-policy';
 
 const CTX_SAVE = 'copyboard-save-text';
+const CTX_SAVE_LINK = 'copyboard-save-link';
+const CTX_SAVE_MEDIA = 'copyboard-save-media';
 const CTX_TOGGLE = 'copyboard-toggle-floating';
 const CTX_SPOTLIGHT = 'copyboard-spotlight';
 
@@ -19,7 +23,7 @@ async function handle(req: RpcRequest): Promise<unknown> {
   await History.ensureLoaded();
   switch (req.action) {
     case 'addToHistory':
-      return { success: await History.add(req.text, req.url) };
+      return await addGated(req.text, req.url);
     case 'getHistory': {
       const history = History.getAll();
       return { history, count: history.length };
@@ -31,9 +35,27 @@ async function handle(req: RpcRequest): Promise<unknown> {
       return { success: true };
     case 'restoreHistory':
       return { success: await History.restore() };
+    case 'getSitePolicy':
+      return await SitePolicy.describeSite(req.url);
+    case 'setSitePolicy': {
+      await SitePolicy.setSiteBlocked(req.url, req.blocked);
+      return await SitePolicy.describeSite(req.url);
+    }
     default:
       return { success: false };
   }
+}
+
+async function addGated(text: string, url?: string): Promise<AddToHistoryResponse> {
+  const sensitive = detectSensitive(text);
+  if (sensitive) {
+    return { success: false, rejectedReason: 'sensitive', sensitiveKind: sensitive };
+  }
+  if (url && (await SitePolicy.isSiteBlocked(url))) {
+    return { success: false, rejectedReason: 'blocked' };
+  }
+  const ok = await History.add(text, url);
+  return ok ? { success: true } : { success: false };
 }
 
 chrome.commands.onCommand.addListener(async (command) => {
@@ -56,6 +78,16 @@ chrome.runtime.onInstalled.addListener(() => {
       contexts: ['selection'],
     });
     chrome.contextMenus.create({
+      id: CTX_SAVE_LINK,
+      title: '📋 링크 주소를 CopyBoard에 저장',
+      contexts: ['link'],
+    });
+    chrome.contextMenus.create({
+      id: CTX_SAVE_MEDIA,
+      title: '📋 미디어 주소를 CopyBoard에 저장',
+      contexts: ['image', 'video', 'audio'],
+    });
+    chrome.contextMenus.create({
       id: CTX_TOGGLE,
       title: '📋 CopyBoard 플로팅 모드',
       contexts: ['page'],
@@ -69,18 +101,28 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === CTX_SAVE && info.selectionText && tab?.id) {
+  const target = pickContextTarget(info);
+  if (target && tab?.id) {
     await History.ensureLoaded();
-    await History.add(info.selectionText, tab.url);
-    await chrome.tabs
-      .sendMessage(tab.id, { action: 'showAutoSaveNotification' })
-      .catch(() => undefined);
+    const result = await addGated(target, tab.url);
+    if (result.success) {
+      await chrome.tabs
+        .sendMessage(tab.id, { action: 'showAutoSaveNotification' })
+        .catch(() => undefined);
+    }
   } else if (info.menuItemId === CTX_TOGGLE) {
     await sendToActiveTab({ action: 'toggleFloating' });
   } else if (info.menuItemId === CTX_SPOTLIGHT) {
     await sendToActiveTab({ action: 'openSpotlight' });
   }
 });
+
+function pickContextTarget(info: chrome.contextMenus.OnClickData): string | null {
+  if (info.menuItemId === CTX_SAVE && info.selectionText) return info.selectionText;
+  if (info.menuItemId === CTX_SAVE_LINK && info.linkUrl) return info.linkUrl;
+  if (info.menuItemId === CTX_SAVE_MEDIA && info.srcUrl) return info.srcUrl;
+  return null;
+}
 
 async function sendToActiveTab(message: RpcRequest): Promise<void> {
   try {

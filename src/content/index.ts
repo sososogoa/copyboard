@@ -1,4 +1,5 @@
 import type { RpcRequest } from '@/shared/messages';
+import { sensitiveLabel } from '@/shared/sensitive';
 import { CopyDetector } from './core/copy-detector';
 import { ensureShadowRoot } from './core/host';
 import { ThemeController } from './core/theme';
@@ -18,9 +19,23 @@ const spotlight = new Spotlight({ theme });
 void theme.init();
 
 detector.setListener((text) => {
-  void Rpc.saveHistory(text, location.href).then((ok) => {
-    if (ok) {
+  void Rpc.saveHistory(text, location.href).then((res) => {
+    if (res.success) {
       showToast({ variant: 'autosave', message: '저장됨' });
+      return;
+    }
+    if (res.rejectedReason === 'sensitive' && res.sensitiveKind) {
+      showToast({
+        variant: 'info',
+        message: `${sensitiveLabel(res.sensitiveKind)} 감지 — 저장하지 않음`,
+        durationMs: 2400,
+      });
+    } else if (res.rejectedReason === 'blocked') {
+      showToast({
+        variant: 'info',
+        message: '이 사이트는 차단됨',
+        durationMs: 2000,
+      });
     }
   });
 });
