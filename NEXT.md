@@ -55,25 +55,23 @@
 
 ---
 
-## 🎨 우선순위 2 — `/impeccable polish` 1회 (디자인 doctrine 반영)
+## ✅ Phase 2.5 — Tinted Neutral Rule 적용 (완료, 2026-05-11)
 
-DESIGN.md 에 박아둔 룰 중 코드와 충돌하는 게 하나 있음:
+`/impeccable:polish src/content/content.css` 1회 실행.
 
-> **The Tinted Neutral Rule.** 모든 neutral 은 Indigo hue 쪽으로 미세하게 기울어야 한다. `#ffffff` / `#000` 같은 무채색은 사용하지 않는다.
+`src/content/content.css` 의 neutral CSS 변수 (라이트/다크 양쪽) 를 Tailwind hex 에서 **DESIGN.json OKLCH 카논** 으로 전환:
+- 라이트: `oklch(98% 0.003 277)` 같은 sand-cream 277° hue, `oklch(20% 0.03 257)` 같은 graphite 257° hue
+- 다크: `oklch(28% 0.04 257)` 같은 late-night 257° hue
+- `#ffffff` / `#000` 무채색 사용 0건. 잔존 hex 는 콘텐츠 타입 배지(의미 전달) 와 액센트 4종(One Voice).
 
-현재 `src/content/content.css` 토큰:
-```css
---cb-bg: #ffffff;          /* 순백 — 룰 위반 */
---cb-bg-elevated: #f9fafb; /* slate, 인디고 hue 아님 */
---cb-text: #111827;        /* 무채색 가까움 */
-```
+**부수 정비**
+- 새 토큰 `--cb-on-accent` (`color: #fff` 5곳 치환) — 액센트 위 텍스트도 인디고 방향 미세 틴트.
+- 새 토큰 `--cb-accent-hover` (`background: #4338ca` 2곳 치환) — primary 버튼/토스트 액션 hover 일원화.
 
-다음 세션에 `/impeccable polish src/content/content.css` 한 번 돌려서:
-- 라이트 모드 neutral 을 indigo hue 방향 chroma 0.005~0.01 로 미세 틴트
-- DESIGN.json 의 `colorMeta.*.canonical` (OKLCH) 값을 source of truth 로 사용
-- 다크 모드도 동일 hue 정렬
+**번들**: 10.76 → 10.80KB gzipped (+0.04KB).
+**테스트**: 변동 없음 (CSS only).
 
-목표: 카테고리 reflex (생산성 → 인디고) 가 *우연이 아니라 의도* 로 보이도록.
+**미해결**: `#0f172a alpha 0.45` Spotlight 백드롭, `rgba(0,0,0,…)` 그림자, `#f0f0f0` 컬러칩 체커 패턴 — 모두 alpha 오버레이 / 데코 패턴이라 토큰화 보류 (의도적).
 
 ---
 

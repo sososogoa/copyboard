@@ -5,17 +5,26 @@
  * is one class flip on the wrapper.
  * ---------------------------------------------------------- */
 
+/*
+ * Neutral tokens follow DESIGN.json's OKLCH canonicals — tilted toward Indigo
+ * hue (sand-cream / warm = 277, graphite / late-night = 257). The Tinted
+ * Neutral Rule: no #ffffff / #000. Pure neutrals are forbidden. Tilt is
+ * intentionally subtle (chroma 0.003–0.04) — readers should *feel* the warmth,
+ * not name it.
+ */
 #copyboard-floating,
 #copyboard-spotlight,
 .copyboard-toast {
-  --cb-bg: #ffffff;
-  --cb-bg-elevated: #f9fafb;
-  --cb-bg-hover: #f3f4f6;
-  --cb-text: #111827;
-  --cb-muted: #6b7280;
-  --cb-border: #e5e7eb;
+  --cb-bg: oklch(99.2% 0.005 277);
+  --cb-bg-elevated: oklch(98% 0.003 277);
+  --cb-bg-hover: oklch(96% 0.005 277);
+  --cb-text: oklch(20% 0.03 257);
+  --cb-muted: oklch(50% 0.02 257);
+  --cb-border: oklch(91% 0.01 257);
   --cb-accent: #4f46e5;
+  --cb-accent-hover: #4338ca;
   --cb-accent-soft: #eef2ff;
+  --cb-on-accent: oklch(99% 0.005 277);
   --cb-success: #10b981;
   --cb-danger: #ef4444;
   --cb-warning: #f59e0b;
@@ -49,13 +58,14 @@
 
 #copyboard-floating.cb-dark,
 #copyboard-spotlight.cb-dark {
-  --cb-bg: #1f2937;
-  --cb-bg-elevated: #111827;
-  --cb-bg-hover: #374151;
-  --cb-text: #f9fafb;
-  --cb-muted: #9ca3af;
-  --cb-border: #374151;
+  --cb-bg: oklch(28% 0.04 257);
+  --cb-bg-elevated: oklch(20% 0.04 257);
+  --cb-bg-hover: oklch(38% 0.04 257);
+  --cb-text: oklch(98% 0.003 277);
+  --cb-muted: oklch(72% 0.015 257);
+  --cb-border: oklch(38% 0.04 257);
   --cb-accent: #818cf8;
+  --cb-accent-hover: #6366f1;
   --cb-accent-soft: #312e81;
   --cb-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -126,7 +136,7 @@
   transition: all var(--cb-trans);
 }
 .cb-pill:hover { border-color: var(--cb-accent); }
-.cb-pill-on { background: var(--cb-success); border-color: var(--cb-success); color: #fff; }
+.cb-pill-on { background: var(--cb-success); border-color: var(--cb-success); color: var(--cb-on-accent); }
 .cb-pill-off { background: var(--cb-bg-hover); color: var(--cb-muted); }
 
 .cb-icon-btn {
@@ -144,7 +154,7 @@
   transition: all var(--cb-trans);
 }
 .cb-icon-btn:hover { background: var(--cb-bg-hover); border-color: var(--cb-border); }
-.cb-close-btn:hover { background: var(--cb-danger); color: #fff; border-color: var(--cb-danger); }
+.cb-close-btn:hover { background: var(--cb-danger); color: var(--cb-on-accent); border-color: var(--cb-danger); }
 
 /* Toolbar */
 .cb-tools {
@@ -208,15 +218,15 @@
 .cb-btn:active { transform: translateY(1px); }
 .cb-btn-primary {
   background: var(--cb-accent);
-  color: #fff;
+  color: var(--cb-on-accent);
 }
-.cb-btn-primary:hover { background: #4338ca; }
+.cb-btn-primary:hover { background: var(--cb-accent-hover); }
 .cb-btn-danger {
   background: transparent;
   color: var(--cb-danger);
   border: 1px solid var(--cb-border);
 }
-.cb-btn-danger:hover { background: var(--cb-danger); color: #fff; border-color: var(--cb-danger); }
+.cb-btn-danger:hover { background: var(--cb-danger); color: var(--cb-on-accent); border-color: var(--cb-danger); }
 
 /* List */
 .cb-list {
@@ -327,7 +337,7 @@
   transition: all var(--cb-trans);
 }
 .cb-card:hover .cb-card-delete { opacity: 1; }
-.cb-card-delete:hover { background: var(--cb-danger); color: #fff; transform: rotate(90deg); }
+.cb-card-delete:hover { background: var(--cb-danger); color: var(--cb-on-accent); transform: rotate(90deg); }
 
 .cb-card-body { font-size: 13px; line-height: 1.5; min-width: 0; }
 .cb-card-row { display: flex; gap: 10px; align-items: center; }
@@ -554,7 +564,7 @@
 .cb-toast-action {
   background: var(--cb-accent);
   border: none;
-  color: #fff;
+  color: var(--cb-on-accent);
   font-size: 11px;
   font-weight: 700;
   padding: 4px 10px;
@@ -562,7 +572,7 @@
   cursor: pointer;
   font-family: inherit;
 }
-.cb-toast-action:hover { background: #4338ca; }
+.cb-toast-action:hover { background: var(--cb-accent-hover); }
 
 .cb-toast-autosave { border-color: var(--cb-success); }
 .cb-toast-autosave .cb-toast-icon { color: var(--cb-success); }
