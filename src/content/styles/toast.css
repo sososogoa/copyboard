@@ -1,0 +1,50 @@
+/* Toast — transient feedback overlay (copied, undo, restored, autosave). */
+
+.copyboard-toast {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--cb-bg);
+  border: 1px solid var(--cb-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cb-text);
+  animation: cb-toast-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform var(--cb-trans);
+  z-index: 2147483646;
+}
+.copyboard-toast.cb-toast-leave {
+  animation: cb-toast-out 0.22s ease-in forwards;
+}
+.cb-toast-icon { font-size: 16px; }
+.cb-toast-text { flex: 1; }
+.cb-toast-action {
+  background: var(--cb-accent);
+  border: none;
+  color: var(--cb-on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.cb-toast-action:hover { background: var(--cb-accent-hover); }
+
+.cb-toast-autosave { border-color: var(--cb-success); }
+.cb-toast-autosave .cb-toast-icon { color: var(--cb-success); }
+.cb-toast-copied { border-color: var(--cb-success); }
+.cb-toast-undo { border-color: var(--cb-danger); }
+.cb-toast-restored { border-color: var(--cb-accent); }
+
+@keyframes cb-toast-in {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes cb-toast-out {
+  to { transform: translateX(40px); opacity: 0; }
+}

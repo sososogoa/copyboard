@@ -116,6 +116,40 @@ C 는 Phase 2 에서 완료. 남은 후보:
 
 ---
 
+## ✅ Phase 2.6 — 구조 정비 + 디펜던시 보건 (완료, 2026-05-11)
+
+CLAUDE.md 5원칙 #1 (SRP) 위반 정비 + typo 정정.
+
+**모듈 분해**
+- `src/content/floating/floating-ui.ts`: 346줄 → 208줄. 신규 `floating-header.ts` (148줄, 헤더 DOM + site pill 컨트롤러), `floating-toolbar.ts` (63줄, 검색 + 직접 입력) 분리. 모두 250줄 가이드 이하.
+- `src/content/content.css`: 610줄 → `src/content/styles/` 5파일로 분배 (base 80 / floating 199 / cards 146 / spotlight 135 / toast 50). `core/host.ts` 가 `?inline` 5개 concat.
+
+**디펜던시**
+- `@types/chrome` 0.0.260 → 0.1.42, `@types/node` `^25` (존재 X 메이저, typo) → `^22` LTS.
+- `typescript`, `vite` 는 보류 — vite 5→8 메이저 점프는 `@crxjs/vite-plugin@beta` 호환 검증 비용 큼.
+
+**번들**: gzip 10.89 → 10.93KB (+0.04KB, CSS 분리 주석 비용). 한도 30KB 내.
+**테스트**: 126/126 그린 (변동 없음 — 구조 정비라서).
+
+**미해결 (dev-only vulnerabilities)**
+- `esbuild < 0.24.2` (vite 5 경유): dev server cross-origin. 프로덕션 무영향.
+- `rollup < 2.80.0` (@crxjs/vite-plugin 경유): 빌드 path traversal. 신뢰된 로컬 빌드만 영향.
+- 둘 다 vite 8 + @crxjs 별도 검증 후 처리 — Phase 3 와 묶거나 별도 PR.
+
+---
+
+## ⏰ 만료 예정 코드
+
+> 마이그레이션/호환성 코드는 영원히 끌고 가면 스파게티 (5원칙 #5). 만료일이 박혀 있어야 함.
+
+| 모듈 | 만료 조건 | 사유 |
+|------|---------|------|
+| `src/background/legacy-decompress.ts` | **v2.5 release 또는 2026-11-11 중 빠른 쪽** | v1 LZ 압축 데이터를 read 시점에만 변환. 사용자가 v2 로 한 번이라도 업그레이드 하면 storage 가 plain text 로 재기록 → 이 경로는 한 번만 필요. 6개월이면 활성 사용자 중 v1 leftover 가질 가능성 거의 0. |
+
+만료 시 함께 제거할 것: `LegacyHistoryItem` 타입 (`src/shared/types.ts`), `legacy-decompress.test.ts`, `history.ts` 에서 `migrateLegacyItem` 호출 경로.
+
+---
+
 ## 📋 운영 메모
 
 - **개발 명령어**: `CLAUDE.md` 참조

@@ -1,6 +1,9 @@
 /**
  * Decompresses items written by the v1 LZ scheme. Used only on read for backwards
  * compatibility — new writes store plain text.
+ *
+ * Slated for removal at v2.5 release or 2026-11-11 (whichever is earlier).
+ * See NEXT.md `⏰ 만료 예정 코드`.
  */
 import type { HistoryItem, LegacyHistoryItem } from '@/shared/types';
 

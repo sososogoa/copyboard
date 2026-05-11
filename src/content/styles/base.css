@@ -1,0 +1,80 @@
+/* ----------------------------------------------------------
+ * CopyBoard — base tokens, reset, host wrapper
+ * Scoped via top-level wrappers (#copyboard-floating, #copyboard-spotlight)
+ * so the host page's CSS cannot leak in and ours cannot leak out.
+ * ---------------------------------------------------------- */
+
+/*
+ * Neutral tokens follow DESIGN.json's OKLCH canonicals — tilted toward Indigo
+ * hue (sand-cream / warm = 277, graphite / late-night = 257). The Tinted
+ * Neutral Rule: no #ffffff / #000. Pure neutrals are forbidden. Tilt is
+ * intentionally subtle (chroma 0.003–0.04) — readers should *feel* the warmth,
+ * not name it.
+ */
+#copyboard-floating,
+#copyboard-spotlight,
+.copyboard-toast {
+  --cb-bg: oklch(99.2% 0.005 277);
+  --cb-bg-elevated: oklch(98% 0.003 277);
+  --cb-bg-hover: oklch(96% 0.005 277);
+  --cb-text: oklch(20% 0.03 257);
+  --cb-muted: oklch(50% 0.02 257);
+  --cb-border: oklch(91% 0.01 257);
+  --cb-accent: #4f46e5;
+  --cb-accent-hover: #4338ca;
+  --cb-accent-soft: #eef2ff;
+  --cb-on-accent: oklch(99% 0.005 277);
+  --cb-success: #10b981;
+  --cb-danger: #ef4444;
+  --cb-warning: #f59e0b;
+  --cb-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12),
+    0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --cb-radius: 12px;
+  --cb-radius-sm: 8px;
+  --cb-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --cb-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --cb-trans: 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  font-family: var(--cb-font);
+  color: var(--cb-text);
+  box-sizing: border-box;
+}
+
+#copyboard-floating *,
+#copyboard-spotlight *,
+.copyboard-toast * {
+  box-sizing: border-box;
+}
+
+/* Host element has pointer-events: none so the shadow DOM doesn't block
+   clicks on the underlying page. Each interactive surface re-enables them. */
+.cb-floating,
+.cb-spot,
+.copyboard-toast {
+  pointer-events: auto;
+}
+
+#copyboard-floating.cb-dark,
+#copyboard-spotlight.cb-dark {
+  --cb-bg: oklch(28% 0.04 257);
+  --cb-bg-elevated: oklch(20% 0.04 257);
+  --cb-bg-hover: oklch(38% 0.04 257);
+  --cb-text: oklch(98% 0.003 277);
+  --cb-muted: oklch(72% 0.015 257);
+  --cb-border: oklch(38% 0.04 257);
+  --cb-accent: #818cf8;
+  --cb-accent-hover: #6366f1;
+  --cb-accent-soft: #312e81;
+  --cb-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #copyboard-floating *,
+  #copyboard-spotlight *,
+  .copyboard-toast {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

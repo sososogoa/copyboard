@@ -28,9 +28,14 @@ src/
 │   └── legacy-decompress.ts # v1 LZ 데이터 read-only 마이그레이션
 └── content/
     ├── index.ts             # Content Script 부트스트랩
-    ├── content.css          # ?inline 으로 import — Shadow DOM 에 주입
+    ├── styles/              # CSS 모듈 — host.ts 가 5개를 ?inline 으로 concat 해 Shadow DOM 주입
+    │   ├── base.css         # 토큰(OKLCH), 리셋, dark 토큰, reduced-motion 미디어
+    │   ├── floating.css     # 사이드 패널: header / toolbar / list / footer
+    │   ├── cards.css        # Smart Cards (타입별 배지/렌더링)
+    │   ├── spotlight.css    # Cmd+Shift+V 모달
+    │   └── toast.css        # 토스트 레이어
     ├── core/
-    │   ├── host.ts          # Shadow DOM 호스트 (싱글톤)
+    │   ├── host.ts          # Shadow DOM 호스트 (싱글톤) + CSS 주입
     │   ├── rpc.ts           # background 호출 래퍼 (Promise 기반)
     │   ├── copy-detector.ts # copy / keydown 이벤트 → 콜백
     │   ├── theme.ts         # 라이트/다크 컨트롤러 (subscribe 패턴)
@@ -38,8 +43,10 @@ src/
     ├── detect/
     │   └── content-type.ts  # 텍스트 → ContentKind 분류 (순수 함수)
     ├── floating/
-    │   ├── floating-ui.ts   # 사이드 패널 컴포넌트
-    │   └── smart-card.ts    # 타입별 카드 렌더러 (순수: HistoryItem → HTMLElement)
+    │   ├── floating-ui.ts       # 조립 + 라이프사이클 + 액션 핸들러
+    │   ├── floating-header.ts   # 헤더 DOM (detect/theme/close pill) + site pill 컨트롤러
+    │   ├── floating-toolbar.ts  # 검색 input + 직접 입력 textarea
+    │   └── smart-card.ts        # 타입별 카드 렌더러 (순수: HistoryItem → HTMLElement)
     └── spotlight/
         ├── spotlight.ts     # Cmd+Shift+V 모달
         └── fuzzy.ts         # 퍼지 매처 + <mark> 하이라이트 (순수 함수)

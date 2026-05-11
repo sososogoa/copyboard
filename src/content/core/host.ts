@@ -14,7 +14,13 @@
  * shadow root so styles and IDs share a scope.
  */
 
-import cssText from '../content.css?inline';
+import baseCss from '../styles/base.css?inline';
+import floatingCss from '../styles/floating.css?inline';
+import cardsCss from '../styles/cards.css?inline';
+import spotlightCss from '../styles/spotlight.css?inline';
+import toastCss from '../styles/toast.css?inline';
+
+const cssText = [baseCss, floatingCss, cardsCss, spotlightCss, toastCss].join('\n');
 
 const HOST_ID = 'copyboard-host';
 

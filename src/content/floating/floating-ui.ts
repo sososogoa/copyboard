@@ -1,5 +1,4 @@
 import { FLOATING_ID, MAX_HISTORY_SIZE } from '@/shared/constants';
-import type { SitePolicyResponse } from '@/shared/messages';
 import type { HistoryItem } from '@/shared/types';
 import { ensureShadowRoot } from '@/content/core/host';
 import * as Rpc from '@/content/core/rpc';
@@ -7,6 +6,8 @@ import { showToast } from '@/content/core/toast';
 import type { ThemeController } from '@/content/core/theme';
 import type { CopyDetector } from '@/content/core/copy-detector';
 import { renderCard } from './smart-card';
+import { buildHeader, type SitePillController } from './floating-header';
+import { buildToolbar } from './floating-toolbar';
 
 interface Deps {
   detector: CopyDetector;
@@ -21,8 +22,7 @@ export class FloatingUI {
   private listEl: HTMLElement | null = null;
   private statsEl: HTMLElement | null = null;
   private searchEl: HTMLInputElement | null = null;
-  private siteBtn: HTMLButtonElement | null = null;
-  private sitePolicy: SitePolicyResponse | null = null;
+  private sitePill: SitePillController | null = null;
   private themeUnsub?: () => void;
 
   constructor(private deps: Deps) {}
@@ -43,7 +43,7 @@ export class FloatingUI {
     this.themeUnsub = this.deps.theme.subscribe((dark) => {
       this.root?.classList.toggle('cb-dark', dark);
     });
-    await Promise.all([this.refresh(), this.refreshSitePolicy()]);
+    await Promise.all([this.refresh(), this.sitePill?.refresh() ?? Promise.resolve()]);
     requestAnimationFrame(() => this.searchEl?.focus());
   }
 
@@ -67,54 +67,6 @@ export class FloatingUI {
     this.render();
   }
 
-  private async refreshSitePolicy(): Promise<void> {
-    try {
-      this.sitePolicy = await Rpc.getSitePolicy(location.href);
-    } catch {
-      this.sitePolicy = null;
-    }
-    this.renderSiteBtn();
-  }
-
-  private renderSiteBtn(): void {
-    const btn = this.siteBtn;
-    if (!btn) return;
-    const policy = this.sitePolicy;
-    if (!policy || !policy.domain) {
-      btn.style.display = 'none';
-      return;
-    }
-    btn.style.display = '';
-    const allowed = !policy.blocked;
-    btn.classList.toggle('cb-pill-on', allowed);
-    btn.classList.toggle('cb-pill-off', !allowed);
-    btn.textContent = `이 사이트 ${allowed ? 'ON' : 'OFF'}`;
-    btn.title = policy.defaultBlocked
-      ? `${policy.domain} (기본 정책으로 차단됨, 변경 불가)`
-      : `${policy.domain} — 클릭하여 ${allowed ? '차단' : '허용'}`;
-    btn.disabled = policy.defaultBlocked;
-    btn.style.cursor = policy.defaultBlocked ? 'not-allowed' : 'pointer';
-  }
-
-  private async toggleSiteBlocked(): Promise<void> {
-    const policy = this.sitePolicy;
-    if (!policy || !policy.domain || policy.defaultBlocked) return;
-    const next = !policy.blocked;
-    try {
-      this.sitePolicy = await Rpc.setSitePolicy(location.href, next);
-    } catch {
-      return;
-    }
-    this.renderSiteBtn();
-    showToast({
-      variant: 'info',
-      message: this.sitePolicy.blocked
-        ? `${this.sitePolicy.domain} 자동 저장 차단`
-        : `${this.sitePolicy.domain} 자동 저장 허용`,
-      durationMs: 1800,
-    });
-  }
-
   private build(): HTMLElement {
     const root = document.createElement('section');
     root.id = FLOATING_ID;
@@ -122,14 +74,35 @@ export class FloatingUI {
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-label', 'CopyBoard');
 
-    root.appendChild(this.buildHeader());
-    root.appendChild(this.buildToolbar());
+    const header = buildHeader({
+      detector: this.deps.detector,
+      theme: this.deps.theme,
+      onClose: () => this.close(),
+    });
+    this.sitePill = header.sitePill;
+    root.appendChild(header.el);
+
+    const toolbar = buildToolbar({
+      onSearch: (q) => {
+        this.filter = q;
+        this.render();
+      },
+      onSubmit: (text) => this.submitManual(text),
+      onEscape: () => this.close(),
+    });
+    this.searchEl = toolbar.searchInput;
+    root.appendChild(toolbar.el);
 
     const list = document.createElement('div');
     list.className = 'cb-list';
     this.listEl = list;
     root.appendChild(list);
 
+    root.appendChild(this.buildFooter());
+    return root;
+  }
+
+  private buildFooter(): HTMLElement {
     const footer = document.createElement('footer');
     footer.className = 'cb-footer';
     const stats = document.createElement('span');
@@ -142,131 +115,20 @@ export class FloatingUI {
     clearBtn.textContent = '전체 삭제';
     clearBtn.onclick = () => void this.handleClear();
     footer.appendChild(clearBtn);
-    root.appendChild(footer);
-
-    return root;
+    return footer;
   }
 
-  private buildHeader(): HTMLElement {
-    const header = document.createElement('header');
-    header.className = 'cb-head';
-
-    const title = document.createElement('h2');
-    title.className = 'cb-title';
-    title.textContent = 'CopyBoard';
-    header.appendChild(title);
-
-    const actions = document.createElement('div');
-    actions.className = 'cb-head-actions';
-
-    const detectBtn = document.createElement('button');
-    detectBtn.type = 'button';
-    detectBtn.className = 'cb-pill';
-    const refreshDetect = () => {
-      const on = this.deps.detector.isEnabled();
-      detectBtn.classList.toggle('cb-pill-on', on);
-      detectBtn.classList.toggle('cb-pill-off', !on);
-      detectBtn.textContent = `자동 감지 ${on ? 'ON' : 'OFF'}`;
-    };
-    refreshDetect();
-    detectBtn.onclick = () => {
-      this.deps.detector.toggle();
-      refreshDetect();
-    };
-    actions.appendChild(detectBtn);
-
-    const siteBtn = document.createElement('button');
-    siteBtn.type = 'button';
-    siteBtn.className = 'cb-pill';
-    siteBtn.textContent = '이 사이트 ...';
-    siteBtn.onclick = () => void this.toggleSiteBlocked();
-    this.siteBtn = siteBtn;
-    actions.appendChild(siteBtn);
-
-    const themeBtn = document.createElement('button');
-    themeBtn.type = 'button';
-    themeBtn.className = 'cb-icon-btn cb-theme-btn';
-    themeBtn.setAttribute('aria-label', '테마 전환');
-    const refreshTheme = () => {
-      themeBtn.textContent = this.deps.theme.current() ? '🌙' : '☀️';
-    };
-    refreshTheme();
-    themeBtn.onclick = () => {
-      this.deps.theme.toggle();
-      refreshTheme();
-    };
-    actions.appendChild(themeBtn);
-
-    const closeBtn = document.createElement('button');
-    closeBtn.type = 'button';
-    closeBtn.className = 'cb-icon-btn cb-close-btn';
-    closeBtn.setAttribute('aria-label', '닫기');
-    closeBtn.textContent = '×';
-    closeBtn.onclick = () => this.close();
-    actions.appendChild(closeBtn);
-
-    header.appendChild(actions);
-    return header;
-  }
-
-  private buildToolbar(): HTMLElement {
-    const tools = document.createElement('div');
-    tools.className = 'cb-tools';
-
-    const search = document.createElement('input');
-    search.type = 'search';
-    search.className = 'cb-search';
-    search.placeholder = '🔍 검색...';
-    search.oninput = () => {
-      this.filter = search.value.trim().toLowerCase();
-      this.render();
-    };
-    search.onkeydown = (e) => {
-      if (e.key === 'Escape') {
-        if (search.value) {
-          search.value = '';
-          this.filter = '';
-          this.render();
-        } else {
-          this.close();
-        }
-      }
-    };
-    this.searchEl = search;
-    tools.appendChild(search);
-
-    const addWrap = document.createElement('div');
-    addWrap.className = 'cb-add';
-    const ta = document.createElement('textarea');
-    ta.className = 'cb-textarea';
-    ta.placeholder = '직접 입력 (Ctrl+Enter 로 추가)';
-    ta.rows = 2;
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.className = 'cb-btn cb-btn-primary';
-    addBtn.textContent = '+ 추가';
-    const submit = async (): Promise<void> => {
-      const value = ta.value.trim();
-      if (!value) return;
-      ta.value = '';
-      const res = await Rpc.saveHistory(value);
-      if (res.success) await this.refresh();
-      else if (res.rejectedReason === 'sensitive') {
-        showToast({ variant: 'info', message: '민감정보로 감지되어 저장하지 않음', durationMs: 2400 });
-      }
-    };
-    addBtn.onclick = () => void submit();
-    ta.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        void submit();
-      }
-    });
-    addWrap.appendChild(ta);
-    addWrap.appendChild(addBtn);
-    tools.appendChild(addWrap);
-
-    return tools;
+  private async submitManual(text: string): Promise<void> {
+    const res = await Rpc.saveHistory(text);
+    if (res.success) {
+      await this.refresh();
+    } else if (res.rejectedReason === 'sensitive') {
+      showToast({
+        variant: 'info',
+        message: '민감정보로 감지되어 저장하지 않음',
+        durationMs: 2400,
+      });
+    }
   }
 
   private render(): void {
